@@ -49,7 +49,7 @@ Emulator RSS including mapped binary pages ≈ 380–386 MB (earlier runs). Host
 | --- | --- | --- |
 | `scripts/gate.sh` | passed (205 unit + contract tests, ruff, spec hash, traceability, secret scan) | 6 s |
 | `scripts/acceptance.sh` | passed: 41 tests, rows A01–A19, cleanup verified, 15/15 operations verified, code hash unchanged during the run | 238 s |
-| `scripts/release-check.sh` | see the final run record in the commit that follows this one | — |
+| `scripts/release-check.sh` | **passed** on `f6a601e` (clean worktree, same code hash): `release-check: ono-sendai-lab is release-ready`; its acceptance run 41/41, cleanup verified | 249 s |
 
 Evidence: [acceptance-evidence.json](evidence/acceptance-evidence.json) (local) · [ci-acceptance-evidence-45496461854.json](evidence/ci-acceptance-evidence-45496461854.json) (CI, verbatim artifact) · [ci-acceptance-evidence-45495408663.json](evidence/ci-acceptance-evidence-45495408663.json) (first CI acceptance, verbatim; produced before evidence carried its origin, so it says `not_ci_evidence: true` although it came from CI) · [operation-compatibility.json](contracts/operation-compatibility.json) · [doc-review.md](evidence/doc-review.md) · [traceability.json](contracts/traceability.json).
 
