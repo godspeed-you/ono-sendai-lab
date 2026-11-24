@@ -39,9 +39,13 @@ jobs:
         with:
           persist-credentials: false
       - name: Install bubblewrap (operator-approved 2026-11-24, ephemeral hosted runner only)
-        # The only privileged step: the distribution package, nothing else.
-        # No sysctl, AppArmor, network or service change is made.
         run: sudo apt-get install -y --no-install-recommends bubblewrap
+      - name: Lift the AppArmor user-namespace restriction (operator-approved 2026-11-24, ephemeral hosted runner only)
+        # The ubuntu-24.04 image confines unprivileged user namespaces, so
+        # bwrap cannot bring up loopback (RTM_NEWADDR EPERM). The operator
+        # chose this setting for the throwaway runner VM; it is never applied
+        # to a developer host by the lab.
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Runner qualification
         # The runner is qualified only if bubblewrap, a systemd user manager
         # and XDG_RUNTIME_DIR are present; whether bubblewrap may create the

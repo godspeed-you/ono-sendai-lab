@@ -144,6 +144,8 @@ def check_evidence(path: Path) -> list[str]:
         return [f"evidence {path} missing or unreadable"]
     if doc.get("code_hash") != code_hash():
         problems.append("acceptance evidence was produced for different code")
+    if doc.get("code_hash_at_end") != doc.get("code_hash"):
+        problems.append("the code changed while acceptance was running")
     if doc.get("spec_sha256") != SPEC_SHA256:
         problems.append("acceptance evidence names a different spec")
     rows = doc.get("acceptance_rows", {})
@@ -235,6 +237,8 @@ def build_evidence(run_dir: Path) -> dict:
 
     rows = load("rows.json", {})
     head = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+    start_file = run_dir / "code_hash_start"
+    tested_hash = start_file.read_text().strip() if start_file.exists() else None
     dirty = bool(subprocess.run(["git", "-C", str(ROOT), "status", "--porcelain"], capture_output=True, text=True).stdout.strip())
     doctor = load("doctor.json", {})
     return {
@@ -243,7 +247,8 @@ def build_evidence(run_dir: Path) -> dict:
         "not_ci_evidence": True,
         "git_head": head,
         "worktree_dirty_at_run": dirty,
-        "code_hash": code_hash(),
+        "code_hash": tested_hash,
+        "code_hash_at_end": code_hash(),
         "spec_sha256": SPEC_SHA256,
         "emulator": {
             "version": _lock()["version"],

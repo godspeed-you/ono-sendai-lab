@@ -28,6 +28,8 @@ RUN="$LAB_CACHE/acceptance/run-$(date -u +%Y%m%dT%H%M%SZ)"
 mkdir -p -m 700 "$RUN"
 export AWS_LAB_ACCEPTANCE_DIR="$RUN"
 RC=0
+# The evidence names the code that was tested: hash it now, compare at the end.
+devtools code-hash > "$RUN/code_hash_start"
 
 cleanup() {
   local state="$RUN/state"
@@ -70,8 +72,10 @@ cp "$EVIDENCE" docs/evidence/raw/acceptance-latest.json
 COMPAT_RC=0
 if [ -f "$RUN/operations.jsonl" ]; then devtools build-compat "$RUN" || COMPAT_RC=$?; else COMPAT_RC=1; fi
 
-if [ "$RC" -ne 0 ] || [ "$VERIFIED" != true ] || [ "$COMPAT_RC" -ne 0 ]; then
-  echo "acceptance: FAILED (pytest=$RC cleanup_verified=$VERIFIED compat=$COMPAT_RC); run dir kept: $RUN" >&2
+HASH_RC=0
+[ "$(cat "$RUN/code_hash_start")" = "$(devtools code-hash)" ] || { HASH_RC=1; echo "acceptance: the code changed during the run; evidence is not valid" >&2; }
+if [ "$RC" -ne 0 ] || [ "$VERIFIED" != true ] || [ "$COMPAT_RC" -ne 0 ] || [ "$HASH_RC" -ne 0 ]; then
+  echo "acceptance: FAILED (pytest=$RC cleanup_verified=$VERIFIED compat=$COMPAT_RC code_unchanged=$((1-HASH_RC))); run dir kept: $RUN" >&2
   exit 1
 fi
 rm -rf "$RUN"

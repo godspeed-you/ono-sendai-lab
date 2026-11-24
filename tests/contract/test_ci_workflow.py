@@ -18,12 +18,16 @@ def test_A19_workflow_uses_the_gates_with_least_privilege():
     assert "continue-on-error" not in text
     assert "secrets." not in text and "AWS_ACCESS_KEY" not in text
     assert "self-hosted" not in text
-    # Exactly one privileged command, approved by the operator on 2026-11-24:
-    # installing the distribution's bubblewrap on the ephemeral hosted runner.
-    sudo_lines = [line.strip() for line in re.sub(r"#.*", "", text).splitlines() if "sudo" in line]
-    assert sudo_lines == ["run: sudo apt-get install -y --no-install-recommends bubblewrap"], sudo_lines
+    # Exactly two privileged commands, both approved by the operator on
+    # 2026-11-24 for the ephemeral hosted runner: install bubblewrap and lift
+    # the AppArmor user-namespace restriction of the ubuntu-24.04 image.
     code = re.sub(r"#.*", "", text)
-    assert "sysctl" not in code and "apparmor_parser" not in code
+    sudo_lines = [line.strip() for line in code.splitlines() if "sudo" in line]
+    assert sudo_lines == [
+        "run: sudo apt-get install -y --no-install-recommends bubblewrap",
+        "run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0",
+    ], sudo_lines
+    assert "apparmor_parser" not in code and "systemctl --system" not in code
     assert "persist-credentials: false" in text
 
 

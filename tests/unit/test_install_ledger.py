@@ -83,3 +83,26 @@ def test_uninstall_fails_closed_without_systemd(settings):
     with pytest.raises(LabError) as exc:
         uninstall(blind)
     assert exc.value.code == "resource_control_unavailable"
+
+
+def test_evidence_must_name_unchanged_code(tmp_path, monkeypatch):
+    """Regression: the code hash was taken after the run, so a change during
+    acceptance would have been reported as tested."""
+    import json
+
+    from ono_sendai_lab import devtools
+
+    monkeypatch.setattr(devtools, "code_hash", lambda: "b" * 64)
+    doc = {
+        "code_hash": "b" * 64,
+        "code_hash_at_end": "c" * 64,
+        "spec_sha256": devtools.SPEC_SHA256,
+        "acceptance_rows": {a: {"status": "passed"} for a in devtools.ACCEPTANCE_IDS},
+        "cleanup": {"verified": True},
+    }
+    path = tmp_path / "evidence.json"
+    path.write_text(json.dumps(doc))
+    assert "the code changed while acceptance was running" in devtools.check_evidence(path)
+    doc["code_hash_at_end"] = "b" * 64
+    path.write_text(json.dumps(doc))
+    assert devtools.check_evidence(path) == []
