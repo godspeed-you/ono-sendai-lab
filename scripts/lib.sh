@@ -17,7 +17,23 @@ devtools() {
   PYTHONDONTWRITEBYTECODE=1 "$DEV_PY" -I -c 'import sys; sys.path.insert(0, sys.argv.pop(1)); from ono_sendai_lab.devtools import main; sys.exit(main())' "$ROOT/src" "$@"
 }
 
+# Prints active lab units. If the user manager cannot be queried it prints a
+# marker instead, so callers that require "no units" fail closed.
 active_lab_units() {
-  systemctl --user list-units --all --plain --no-legend --state=active,activating,deactivating 'ono-sendai-lab-*' 2>/dev/null \
-    | awk '{print $1}' | grep -v '^ono-sendai-lab-probe' || true
+  local out
+  if ! out=$(systemctl --user list-units --all --plain --no-legend --state=active,activating,deactivating 'ono-sendai-lab-*' 2>/dev/null); then
+    echo "systemd-user-manager-unreachable"
+    return 0
+  fi
+  printf '%s\n' "$out" | awk 'NF {print $1}' | grep -v '^ono-sendai-lab-probe' || true
+}
+
+# Prints the PIDs of aws-emulator processes of this user (there must be none after a run).
+lab_emulator_pids() {
+  pgrep -u "$(id -u)" -x aws-emulator || true
+}
+
+# Generation directories left in the runtime location (the slot lock file is not one).
+runtime_leftovers() {
+  find "${XDG_RUNTIME_DIR}/ono-sendai-lab" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l
 }

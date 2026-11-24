@@ -89,3 +89,9 @@ def test_destroy_absent_succeeds_without_state(tmp_path):
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
+
+
+def test_json_help_is_one_document(tmp_path):
+    proc = run(["--json", "--help"], tmp_path)
+    doc = json.loads(proc.stdout)
+    assert proc.returncode == 0 and doc["command"] == "help" and "--json" in doc["result"]["usage"]

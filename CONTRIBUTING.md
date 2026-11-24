@@ -15,7 +15,7 @@ bin/aws-lab doctor
 | `scripts/acceptance.sh` | real emulator, namespaces and cgroups, A01–A19, sequential, fresh state, cleanup verification, evidence | installed lab, idle slot |
 | `scripts/release-check.sh` | both, on a clean worktree, plus evidence, compatibility manifest and cleanup checks; prints `release-check: ono-sendai-lab is release-ready` | as above |
 
-Run the narrowest test first (`venv-dev/bin/python -m pytest tests/unit/test_x.py -k name`); acceptance subsets run with `AWS_LAB_ACCEPTANCE_DIR` set to a fresh 0700 directory under `$XDG_CACHE_HOME/ono-sendai-lab/acceptance/`.
+Run the narrowest test first (`$XDG_DATA_HOME/ono-sendai-lab/venv-dev/bin/python -m pytest tests/unit/test_x.py -k name`, default `~/.local/share/…`); acceptance subsets run with `AWS_LAB_ACCEPTANCE_DIR` set to a fresh 0700 directory under `$XDG_CACHE_HOME/ono-sendai-lab/acceptance/`.
 
 ## Rules
 

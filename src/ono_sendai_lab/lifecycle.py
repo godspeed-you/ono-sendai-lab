@@ -37,6 +37,11 @@ def interruptible():
     def handler(signum, _frame):
         raise Interrupted(signal.Signals(signum).name)
 
+    import threading
+
+    if threading.current_thread() is not threading.main_thread():
+        yield  # signal handlers can only be installed in the main thread (library use)
+        return
     old = {s: signal.getsignal(s) for s in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)}
     for sig in old:
         signal.signal(sig, handler)
@@ -60,7 +65,19 @@ class Lab:
         gen = record.get("generation") or {}
         return gen.get("runtime")
 
-    def _end_generation(self, record: dict, terminal: str, reason: str) -> None:
+    def _try_stop(self, record: dict, runtime: dict | None) -> bool:
+        """Stop the runtime; True only when the backend verified its death."""
+        if not runtime or runtime.get("ended"):
+            return True
+        try:
+            self.backend_for(record).stop(runtime)
+        except LabError as exc:
+            record["cleanup_error"] = exc.message
+            return False
+        record.pop("cleanup_error", None)
+        return True
+
+    def _end_generation(self, record: dict, terminal: str, reason: str, stopped: bool = True) -> None:
         gen = record.get("generation") or {}
         hist = record.setdefault("history", [])
         if gen.get("id"):
@@ -74,11 +91,8 @@ class Lab:
                 }
             )
             del hist[:-HISTORY_LIMIT]
-        if gen.get("runtime"):
-            gen["runtime"] = {
-                k: gen["runtime"].get(k) for k in ("backend", "unit", "description", "boot_id", "invocation_id", "generation_id", "ctl_dir")
-            }
-            gen["runtime"]["ended"] = True
+        if stopped:
+            self._mark_ended(record)
 
     # ------------------------------------------------------------ reconcile
     def reconcile(self, record: dict) -> dict:
@@ -98,34 +112,36 @@ class Lab:
         if record.get("operation"):
             op = record.pop("operation")
             changed = True
-            if runtime and not runtime.get("ended"):
-                try:
-                    self.backend_for(record).stop(runtime)
-                except LabError as exc:
-                    record["cleanup_error"] = exc.message
+            stopped = self._try_stop(record, runtime)
             if state in ("STARTING", "STOPPING", "READY"):
                 self.registry.set_state(record, "FAILED", f"interrupted {op.get('kind')}")
-                self._end_generation(record, "FAILED", f"interrupted {op.get('kind')}")
+                self._end_generation(record, "FAILED", f"interrupted {op.get('kind')}", stopped=stopped)
                 if record.get("fixture", {}).get("state") not in (None, "UNKNOWN"):
                     self.registry.set_fixture(record, "UNKNOWN")
         elif state == "READY" and runtime and not runtime.get("ended"):
             obs = self.backend_for(record).observe(runtime)
             gen = record["generation"]
-            if obs.alive and time.time() >= gen["lease_deadline"] + 5:
+            if obs.alive and time.time() >= gen["lease_deadline"]:
                 obs.alive, obs.terminal_state, obs.reason = False, "EXPIRED", "lease-expired"
             if not obs.alive:
-                try:
-                    self.backend_for(record).stop(runtime)
-                except LabError as exc:
-                    record["cleanup_error"] = exc.message
+                if obs.reason == "stopping":
+                    # The unit was still deactivating: let it finish, then classify from its exit record.
+                    stopped = self._try_stop(record, runtime)
+                    obs = self.backend_for(record).observe(runtime)
+                stopped = self._try_stop(record, runtime)
                 terminal = obs.terminal_state or "FAILED"
                 if terminal == "STOPPED":
                     terminal = "FAILED"
                 self.registry.set_state(record, terminal, obs.reason)
                 record["diagnostics"] = obs.details
-                self._end_generation(record, terminal, obs.reason)
+                self._end_generation(record, terminal, obs.reason, stopped=stopped)
                 self.registry.set_fixture(record, "UNKNOWN")
                 changed = True
+        elif state in ("FAILED", "EXPIRED", "STOPPED") and runtime and not runtime.get("ended"):
+            # An earlier stop could not be verified: the slot stays occupied until it can.
+            if self._try_stop(record, runtime):
+                self._mark_ended(record)
+            changed = True
         elif state in ("STARTING", "STOPPING"):
             # A record in a transitional state without an operation marker is
             # corrupt; treat like an interrupted operation.
@@ -135,6 +151,14 @@ class Lab:
             self.registry.save(record)
         return record
 
+    @staticmethod
+    def _mark_ended(record: dict) -> None:
+        runtime = (record.get("generation") or {}).get("runtime")
+        if runtime:
+            keep = ("backend", "unit", "description", "boot_id", "invocation_id", "generation_id", "ctl_dir")
+            record["generation"]["runtime"] = {k: runtime.get(k) for k in keep}
+            record["generation"]["runtime"]["ended"] = True
+
     def reconcile_all(self) -> list[dict]:
         return [self.reconcile(r) for r in self.registry.all()]
 
@@ -143,7 +167,14 @@ class Lab:
         return foreign_units(self.settings, {u for u in known if u})
 
     def _active(self, records: list[dict]) -> list[dict]:
-        return [r for r in records if r.get("state") in ACTIVE_STATES]
+        """Records that occupy the single slot: active states, and any record
+        whose runtime has not been verified dead."""
+        out = []
+        for r in records:
+            runtime = (r.get("generation") or {}).get("runtime")
+            if r.get("state") in ACTIVE_STATES or (runtime and not runtime.get("ended")):
+                out.append(r)
+        return out
 
     # ------------------------------------------------------------- commands
     def doctor(self) -> dict:
@@ -260,21 +291,13 @@ class Lab:
             record.pop("operation", None)
             self.registry.save(record)
         except (LabError, Interrupted, Exception) as exc:
-            runtime = record["generation"].get("runtime")
-            cleanup_error = None
-            if runtime:
-                try:
-                    backend.stop(runtime)
-                except LabError as stop_exc:
-                    cleanup_error = stop_exc.message
+            stopped = self._try_stop(record, record["generation"].get("runtime"))
             reason = (
                 exc.code if isinstance(exc, LabError) else f"interrupted ({exc})" if isinstance(exc, Interrupted) else type(exc).__name__
             )
             self.registry.set_state(record, "FAILED", reason)
             record["diagnostics"] = exc.details if isinstance(exc, LabError) else {}
-            if cleanup_error:
-                record["cleanup_error"] = cleanup_error
-            self._end_generation(record, "FAILED", reason)
+            self._end_generation(record, "FAILED", reason, stopped=stopped)
             record.pop("operation", None)
             self.registry.save(record)
             if isinstance(exc, LabError):
@@ -322,7 +345,7 @@ class Lab:
     def create(self, name: str, startup_timeout: int = STARTUP_TIMEOUT_DEFAULT, backend: str = "local") -> dict:
         validate_name(name)
         backend_impl = get_backend(backend, self.settings)
-        with self.registry.locked(), interruptible():
+        with self.registry.locked(), self.registry.slot_locked(), interruptible():
             records = self.reconcile_all()
             if any(r.get("name") == name for r in records):
                 raise LabError(
@@ -448,6 +471,10 @@ class Lab:
         with self.registry.locked():
             record = self._ready_record(name, generation)
             gen = record["generation"]
+            if time.time() >= gen["lease_deadline"]:
+                raise LabError(
+                    "lease_expired", "the lease has already ended; it cannot be revived", {"lease_deadline": _iso(gen["lease_deadline"])}
+                )
             new_deadline = gen["lease_deadline"] + minutes * self.settings.minute_seconds
             if new_deadline > gen["max_deadline"]:
                 raise LabError(
@@ -551,16 +578,17 @@ class Lab:
     def reset(self, name: str, scenario_id: str | None = None, startup_timeout: int = STARTUP_TIMEOUT_DEFAULT) -> dict:
         validate_name(name)
         manifest = scenarios.load_manifest(self.settings.scenarios_dir, scenario_id) if scenario_id else None
-        with self.registry.locked(), interruptible():
+        with self.registry.locked(), self.registry.slot_locked(), interruptible():
             records = self.reconcile_all()
             match = [r for r in records if r.get("name") == name]
             if not match:
                 raise LabError("not_found", f"no sandbox named {name!r}")
             record = match[0]
             old_generation = (record.get("generation") or {}).get("id")
-            self._stop_generation(record, "reset")
+            # Everything that can refuse runs before the old generation is touched.
             self._admit_start(records, startup_timeout, exclude_id=record["sandbox_id"])
             self.backend_for(record).preflight()
+            self._stop_generation(record, "reset")
             self._start_generation(record, startup_timeout)
             result = {"previous_generation": old_generation, **self.describe(record)}
             if manifest is not None:

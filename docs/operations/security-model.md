@@ -10,7 +10,7 @@ Emulator-generated keys and CA (per generation), the operator's real cloud crede
 
 | Actor | Example | Prevented by | Status |
 | --- | --- | --- | --- |
-| **Accidental misuse** by an agent or operator | `--endpoint-url`, `--profile`, `file://` input, a typo in a sandbox name, a second concurrent start, a forgotten sandbox | CLI allowlist and per-kind validation (`operations.py`), name pattern, single-slot lock, lease + idle + absolute lifetime enforced in the unit, JSON errors with remedies | tested (A10, A14, A13, A16) |
+| **Accidental misuse** by an agent or operator | `--endpoint-url`, `--profile`, `file://` input, a typo in a sandbox name, a second concurrent start (also from another state directory), a forgotten sandbox | CLI allowlist and per-kind validation (`operations.py`), name pattern, per-user slot lock plus unit census, lease + idle + absolute lifetime enforced in the unit, JSON errors with remedies | tested (A10, A14, A13, A16; cross-state-directory race in unit tests) |
 | **Compromised or misbehaving upstream process** (the emulator is untrusted software) | reaching the internet or the host LAN, reading `~/.aws` or SSH keys, using the Docker socket, hogging memory/CPU, persisting after a crash | kernel isolation: empty network namespace (`lo` only), tmpfs root with a read-only allowlist, no capabilities, `no_new_privs`, nested user namespaces disabled, cgroup caps, `RuntimeMaxSec`, OOM policy | tested (A11, A04, A12, A13) |
 | **Same-UID host attacker** | another process of the operator's user reading `$XDG_STATE_HOME`, connecting to the worker socket, stopping units | owner-private files and sockets protect against other users only; a same-UID process has the same rights as the lab | **not prevented**, by design (LAB-022) |
 | **Future multi-user remote attacker** | a second developer reaching another's sandbox on the shared VM | nothing yet: needs authenticated transport, per-user authorization, ownership and quotas (ADR-0005) | **not implemented**; remote access is disabled |
@@ -18,7 +18,8 @@ Emulator-generated keys and CA (per generation), the operator's real cloud crede
 
 ## What the kernel enforces and what the CLI enforces
 
-- **Kernel:** network reachability, filesystem visibility, capabilities, CPU/memory/swap/tasks caps, lifetime backstop. These hold even if the lab's own Python code in the sandbox were subverted.
+- **Kernel:** network reachability, filesystem visibility, capabilities, CPU/memory/swap/tasks caps. These hold even if the lab's own Python code in the sandbox were subverted.
+- **systemd (outside the sandbox):** the absolute lifetime (`RuntimeMaxSec`) and the OOM stop policy; they hold even if the supervisor hangs.
 - **CLI and worker:** which AWS operations and parameters are allowed, generation binding, fixture state, redaction. A process of the operator's own UID can bypass these by talking to the emulator through the worker socket or reading files on the host side; they protect against mistakes, not against that process.
 
 ## Secrets handling
@@ -30,7 +31,7 @@ Keys and CA exist only in the generation's private tmpfs `HOME` inside the names
 - Kernel or bubblewrap vulnerabilities can break containment; the lab makes no claim of protection against kernel exploits.
 - No seccomp filter is applied beyond bubblewrap's defaults.
 - `/usr` is visible read-only inside the sandbox (system binaries and libraries, no secrets by design of the distribution).
-- The emulator may log request details in future versions; the lab keeps only allowlisted fields of the documented startup line and generic messages.
+- The emulator may log request details in future versions. The lab keeps only allowlisted fields of upstream JSON log lines; upstream stderr lines are plain text, so they are pattern-redacted and truncated, which is weaker than field allowlisting.
 - Same-UID access, as above.
 
 Any failed or untested control in this table is a release blocker, reported in docs/STATE.md.

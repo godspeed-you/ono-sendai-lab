@@ -56,7 +56,8 @@ def measure(settings) -> dict:
             continue
         tracked[path] = tree_size(resolved)
     total = sum(locations.values()) + sum(tracked.values())
-    free = shutil.disk_usage(settings.data_dir if settings.data_dir.exists() else Path.home()).free
+    probe = next((p for p in (settings.data_dir, settings.data_dir.parent, Path.home()) if p.exists()), Path("/"))
+    free = shutil.disk_usage(probe).free
     return {
         "budget_bytes": settings.disk_budget_bytes,
         "reserve_bytes": DISK_RESERVE_BYTES,

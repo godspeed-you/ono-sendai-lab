@@ -4,14 +4,14 @@
 
 | Resource | Limit | Mechanism | Verified by |
 | --- | --- | --- | --- |
-| Active generations | 1 across all sandboxes | lifecycle lock + unit census | A04, A14 |
+| Active generations | 1 across all sandboxes and state directories of the user | per-user slot lock in `$XDG_RUNTIME_DIR/ono-sendai-lab/slot.lock` + unit census; a generation keeps the slot until its stop is verified | A04, A14, unit tests |
 | CPU | one logical CPU (100 % quota) | `CPUQuota=100%` → `cpu.max 100000 100000` | A04 (kernel file) |
 | Memory | 1,073,741,824 bytes | `MemoryMax` → `memory.max` | A04 |
 | Swap / zswap | 0 | `MemorySwapMax=0`, `MemoryZSwapMax=0` | A04, A17 (`memory.swap.current = 0`) |
 | Tasks | 512 | `TasksMax` → `pids.max` | A04 |
 | Lifetime | 120 minutes | supervisor watchdog + `RuntimeMaxSec` | A13 |
 | Disk | 5,000,000,000 bytes for the whole run and lab | ledger admission (no hard quota) | A04, gates |
-| Logs | 256 KiB × 2 per generation, 200 lines per `logs` call | ring log | A04 |
+| Logs | 256 KiB × 2 per sandbox, 200 lines per `logs` call | ring log (supervisor stderr redirected into it) | A04 |
 
 The CPU and memory caps apply to the generation's cgroup, which holds the emulator plus the in-namespace supervisor/worker. The supervisor's RSS and the host CLI's peak RSS are reported separately (`status NAME` → `resources.processes`, acceptance measurements).
 

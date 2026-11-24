@@ -37,7 +37,7 @@ Transient units vanish on reboot and are never enabled, so nothing auto-starts a
 
 ## Disk accounting
 
-The reference host has no filesystem quota for this user. The lab therefore uses **conservative admission**: before bootstrap, every generation start, every seed and every acceptance run it measures all lab-owned locations (`$XDG_DATA_HOME`, `$XDG_STATE_HOME`, `$XDG_CACHE_HOME`, `$XDG_RUNTIME_DIR` subtrees named `ono-sendai-lab`) plus registered tracked paths (the checkout, run scratch), adds the projected allocation and a 250 MB reserve, and refuses above 5,000,000,000 bytes. It also refuses when host free space would fall below 2 GB. Logs are ring-bounded (256 KiB × 2 per generation), test temp directories live inside the lab cache, and pip runs with `--no-cache-dir`. This is measurement plus refusal; there is no hard quota (`doctor` reports `hard_quota: false`).
+The reference host has no filesystem quota for this user. The lab therefore uses **conservative admission**: before bootstrap, every generation start, every seed and every acceptance run it measures all lab-owned locations (`$XDG_DATA_HOME`, `$XDG_STATE_HOME`, `$XDG_CACHE_HOME`, `$XDG_RUNTIME_DIR` subtrees named `ono-sendai-lab`) plus registered tracked paths (the checkout, run scratch), adds the projected allocation and a 250 MB reserve, and refuses above 5,000,000,000 bytes. It also refuses when host free space would fall below 2 GB. Logs are ring-bounded (256 KiB × 2 per sandbox), test temp directories live inside the lab cache, and pip runs with `--no-cache-dir`. This is measurement plus refusal; there is no hard quota (`doctor` reports `hard_quota: false`).
 
 ## Consequences
 

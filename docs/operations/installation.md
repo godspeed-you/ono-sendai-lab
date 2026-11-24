@@ -7,7 +7,7 @@
 | Linux x86_64 | the pinned package is `amd64` | `uname -m` |
 | Python ≥ 3.12 with `venv` at `/usr/bin/python3` | host CLI (stdlib only) and private venvs | `python3 -m venv --help` |
 | `bwrap` (bubblewrap) able to create unprivileged user + network namespaces | containment (ADR-0002) | `aws-lab doctor` |
-| systemd user manager on cgroup v2 with `cpu memory pids` delegated | CPU/memory/swap caps, lifetime | `systemctl --user show-environment` |
+| systemd user manager on cgroup v2 with `cpu memory pids` delegated | CPU/memory/swap caps, lifetime | `systemctl --user show-environment` and `cat /sys/fs/cgroup/user.slice/user-$(id -u).slice/user@$(id -u).service/cgroup.subtree_control` |
 | `gpg`, `dpkg-deb` | signature check and payload extraction | `command -v gpg dpkg-deb` |
 | about 1.7 GB free in your home directory | package 0.22 GB + executable 1.2 GB + venvs | `df -h ~` |
 | HTTPS to `downloads.aws.com` and PyPI **during setup only** | the lab never downloads at runtime | — |
@@ -27,7 +27,7 @@ scripts/bootstrap.sh --dev      # also the hashed gate toolchain (pytest, ruff, 
 bin/aws-lab doctor              # full preflight incl. a full executable digest
 ```
 
-Bootstrap verifies the platform against `locks/emulator.lock.json`, measures the disk ledger, downloads the pinned `.deb` and its signature over HTTPS (cached for later offline use), checks the SHA-256, verifies the OpenPGP signature with the pinned AWS publisher key, extracts the payload into a private prefix, checks the executable digest and its `-v` output inside the sandbox, and builds hashed venvs. A repeat run re-verifies and reuses. `--offline` uses only cached downloads.
+Bootstrap verifies the platform against `locks/emulator.lock.json`, measures the disk ledger, downloads the pinned `.deb` and its signature over HTTPS (cached for later offline use), checks the SHA-256, verifies the OpenPGP signature with the pinned AWS publisher key, extracts the payload into a private prefix, checks the executable digest and its `-v` output inside the sandbox, and builds hashed venvs. A repeat run re-verifies and reuses. `--offline` uses only the cached package and signature and refuses if a venv still has to be built (venvs come from PyPI). `--plan` measures and plans and writes nothing.
 
 Locations (all 0700, all counted by the disk ledger):
 

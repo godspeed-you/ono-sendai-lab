@@ -8,7 +8,7 @@ Status: accepted · 2026-11-24 · Requirements: LAB-024, LAB-025, LAB-026, LAB-0
 - `AWS_CONFIG_FILE` and `AWS_SHARED_CREDENTIALS_FILE` point at a nonexistent path, metadata discovery and host prefix injection are disabled, proxy variables are removed, `proxies={}`, path-style S3 addressing, SigV4 (`s3v4`).
 - A `before-send` hook refuses any request whose URL leaves the emulator endpoint, so neither a redirect nor a default-endpoint fallback can send a request elsewhere; the empty network namespace is the independent second layer.
 - Retries: reads up to 3 attempts (botocore standard mode), mutations exactly 1 (no blind retry of ambiguous mutations). Connect timeout 5 s, read timeout 20 s.
-- Startup proof before READY: verified-TLS health route (`ok`), an unsigned STS request rejected (403), telemetry notice says disabled, signed `GetCallerIdentity` returns account `000000000000` and `arn:aws:iam::000000000000:user/emulator`, and `DescribeAvailabilityZones` reports only `us-west-2`.
+- Startup proof before READY: verified-TLS health route (`ok`), an unsigned STS request rejected with HTTP 403 (any other status fails the start), telemetry notice says disabled, signed `GetCallerIdentity` returns account `000000000000` and `arn:aws:iam::000000000000:user/emulator`, and `DescribeAvailabilityZones` reports only `us-west-2`.
 - Region adaptation: outside us-east-1 `CreateBucket` needs `LocationConstraint`; the lab sets it explicitly from the session region (qualified on 1.0.598).
 
 ## Worker channel

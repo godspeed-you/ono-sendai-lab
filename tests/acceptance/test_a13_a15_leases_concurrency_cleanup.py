@@ -175,7 +175,5 @@ def test_A15_destroy_is_idempotent_and_complete(lab):
     runtime_root = Path(os.environ["XDG_RUNTIME_DIR"]) / "ono-sendai-lab"
     assert not (runtime_root / rec["sandbox_id"]).exists()
     assert not (RUN_DIR / "state" / "ono-sendai-lab" / "sandboxes" / rec["sandbox_id"]).exists()
-    leftovers = subprocess.run(
-        ["find", str(runtime_root), str(RUN_DIR), "-name", "emulator_credentials"], capture_output=True, text=True
-    ).stdout.strip()
-    assert leftovers == ""
+    emulators = subprocess.run(["pgrep", "-u", str(os.getuid()), "-x", "aws-emulator"], capture_output=True, text=True).stdout.strip()
+    assert emulators == "", "an emulator process (and with it its generated keys) survived destroy"

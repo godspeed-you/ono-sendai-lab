@@ -266,7 +266,7 @@ class Supervisor:
                 unsigned_status = resp.status
         except urllib.error.HTTPError as exc:
             unsigned_status = exc.code
-        if unsigned_status not in (403, 404):
+        if unsigned_status != 403:
             raise LabError("startup_failed", "emulator accepted an unsigned request; authentication is not enforced")
         parser = configparser.ConfigParser()
         parser.read(cred_file)
@@ -411,6 +411,8 @@ class Supervisor:
             raise LabError("invalid_argument", "lease_deadline must be a number")
         if deadline > self.max_deadline:
             raise LabError("lease_cap_exceeded", "lease cannot exceed the absolute lifetime")
+        if self.activated and time.time() >= self.lease_deadline:
+            raise LabError("lease_expired", "the lease has already ended; it cannot be revived")
         self.lease_deadline = float(deadline)
 
     def op_set_lease(self, params):
@@ -519,6 +521,20 @@ class Supervisor:
         return {"results": results}
 
 
+class _RingStream:
+    def __init__(self, log: RingLog):
+        self.log = log
+
+    def write(self, text: str) -> int:
+        for line in text.splitlines():
+            if line.strip():
+                self.log.write("SUPERVISOR-STDERR", line[:300])
+        return len(text)
+
+    def flush(self) -> None:
+        pass
+
+
 def parse_args(argv: list[str]) -> argparse.Namespace:
     p = argparse.ArgumentParser(prog="ono-sendai-lab-supervisor")
     p.add_argument("--generation", required=True)
@@ -544,6 +560,10 @@ def main(argv: list[str] | None = None) -> int:
     def on_term(_signum, _frame):
         threading.Thread(target=sup.finish, args=(EXIT_STOPPED, "stop-requested"), daemon=True).start()
 
+    # Python-level diagnostics of the supervisor go through the same bounded,
+    # redacted ring log as everything else; the unit's stderr file only ever
+    # sees output from before this point.
+    sys.stderr = _RingStream(sup.log)
     signal.signal(signal.SIGTERM, on_term)
     signal.signal(signal.SIGINT, on_term)
     sup.write_status(phase="starting")

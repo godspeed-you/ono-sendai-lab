@@ -51,13 +51,15 @@ cleanup
 
 echo "acceptance: verifying cleanup"
 LEFT_UNITS=$(active_lab_units | tr '\n' ' ')
-RUNTIME_LEFT=$(find "${XDG_RUNTIME_DIR}/ono-sendai-lab" -mindepth 1 -maxdepth 1 2>/dev/null | wc -l)
-CREDS_LEFT=$(find "$RUN" "${XDG_RUNTIME_DIR}/ono-sendai-lab" "$DATA_HOME/ono-sendai-lab" -name emulator_credentials 2>/dev/null | wc -l)
+RUNTIME_LEFT=$(runtime_leftovers)
+EMULATORS_LEFT=$(lab_emulator_pids | wc -l)
 RECORDS_LEFT=$(find "$RUN/state" -name record.json 2>/dev/null | wc -l)
 VERIFIED=false
-if [ -z "$LEFT_UNITS" ] && [ "$RUNTIME_LEFT" -eq 0 ] && [ "$CREDS_LEFT" -eq 0 ] && [ "$RECORDS_LEFT" -eq 0 ]; then VERIFIED=true; fi
+if [ -z "$LEFT_UNITS" ] && [ "$RUNTIME_LEFT" -eq 0 ] && [ "$EMULATORS_LEFT" -eq 0 ] && [ "$RECORDS_LEFT" -eq 0 ]; then VERIFIED=true; fi
+# Emulator keys and CA exist only in the generation's namespace tmpfs; with no
+# unit, no emulator process and no generation directory left, none survive.
 cat > "$RUN/cleanup.json" <<JSON
-{"verified": $VERIFIED, "active_lab_units": "$LEFT_UNITS", "runtime_entries": $RUNTIME_LEFT, "credential_files": $CREDS_LEFT, "records": $RECORDS_LEFT}
+{"verified": $VERIFIED, "active_lab_units": "$LEFT_UNITS", "runtime_generation_dirs": $RUNTIME_LEFT, "emulator_processes": $EMULATORS_LEFT, "records": $RECORDS_LEFT}
 JSON
 echo "{\"acceptance_seconds\": $(( $(date +%s) - START ))}" > "$RUN/durations.json"
 

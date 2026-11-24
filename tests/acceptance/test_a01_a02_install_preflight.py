@@ -94,7 +94,12 @@ def test_A01_fresh_install_doctor_and_uninstall_cycle():
     name = lock()["asset"]["filename"]
     for f in (name, name + ".sig"):
         os.link(os.path.join(cached, f), downloads / f)  # no second download, no extra bytes
+    rc, doc = boot("--plan", env=env)
+    assert rc == 0 and doc["result"]["dry_run"] is True
+    assert not (fresh / "state").exists() and not (fresh / "data").exists(), "--plan must not write"
     rc, doc = boot("--offline", env=env)
+    assert rc == 4 and "--offline" in doc["error"]["message"], "offline cannot build venvs from PyPI"
+    rc, doc = boot(env=env)  # the package comes from the cache (hard links); only the venvs need PyPI
     assert rc == 0, doc
     assert doc["result"]["executable"] == {"reused": False}
     assert doc["result"]["runtime_venv"]["reused"] is False
@@ -121,12 +126,12 @@ def test_A02_doctor_detects_missing_support(lab, missing, code):
 @pytest.mark.parametrize("missing", [["bwrap"], ["systemd"], ["cgroup"]])
 def test_A02_unsafe_preflight_refuses_create_without_side_effects(lab, missing):
     runtime_root = os.path.join(os.environ["XDG_RUNTIME_DIR"], "ono-sendai-lab")
-    before_runtime = set(os.listdir(runtime_root)) if os.path.isdir(runtime_root) else set()
+    before_runtime = set(os.listdir(runtime_root)) - {"slot.lock"} if os.path.isdir(runtime_root) else set()
     res = lab.cli("create", "--name", "a02-unsafe", config={"simulate_missing": missing})
     assert res.rc == 4 and res.error["code"] in ("isolation_unavailable", "resource_control_unavailable", "preflight_failed")
     assert lab.ok("status")["sandboxes"] == []
     assert active_lab_units() == []
-    after_runtime = set(os.listdir(runtime_root)) if os.path.isdir(runtime_root) else set()
+    after_runtime = set(os.listdir(runtime_root)) - {"slot.lock"} if os.path.isdir(runtime_root) else set()
     assert after_runtime == before_runtime
 
 

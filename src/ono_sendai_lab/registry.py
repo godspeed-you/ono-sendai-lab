@@ -98,6 +98,33 @@ class Registry:
         finally:
             os.close(fd)
 
+    @contextmanager
+    def slot_locked(self, timeout: float | None = None):
+        """Host-wide (per user) lock around slot admission and generation start.
+
+        It lives in the runtime directory shared by every state directory of
+        this user, so two registries cannot both pass admission and start a
+        generation at the same time. Lock order: registry lock, then slot lock.
+        """
+        from .config import LOCK_TIMEOUT_SECONDS
+
+        base = self.settings.runtime_dir or self.settings.state_dir
+        ensure_private_dir(base)
+        fd = os.open(base / "slot.lock", os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
+        deadline = time.monotonic() + (LOCK_TIMEOUT_SECONDS if timeout is None else timeout)
+        try:
+            while True:
+                try:
+                    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    break
+                except BlockingIOError:
+                    if time.monotonic() > deadline:
+                        raise LabError("lock_timeout", "another lab generation is being started") from None
+                    time.sleep(0.1)
+            yield
+        finally:
+            os.close(fd)
+
     def _dir(self, sandbox_id: str) -> Path:
         if not ID_RE.match(sandbox_id):
             raise LabError("internal_error", "invalid sandbox id")

@@ -4,180 +4,653 @@
   "title": "aws-lab result shapes (contract version 1)",
   "description": "Per-command `result` objects. Timestamps are UTC ISO-8601 strings with Z. Fields typed with null may be null; fields not listed as required may be absent.",
   "$defs": {
-    "ts": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"},
-    "ts_or_null": {"anyOf": [{"$ref": "#/$defs/ts"}, {"type": "null"}]},
-    "hex32": {"type": "string", "pattern": "^[0-9a-f]{32}$"},
-    "name": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9-]{0,47}$"},
-    "process_state": {"enum": ["STARTING", "READY", "STOPPING", "STOPPED", "FAILED", "EXPIRED"]},
-    "fixture_state": {"enum": ["EMPTY", "SEEDING", "VERIFIED", "DIRTY", "UNKNOWN", null]},
+    "ts": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "ts_or_null": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ts"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "hex32": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{32}$"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9-]{0,47}$"
+    },
+    "process_state": {
+      "enum": [
+        "STARTING",
+        "READY",
+        "STOPPING",
+        "STOPPED",
+        "FAILED",
+        "EXPIRED"
+      ]
+    },
+    "fixture_state": {
+      "enum": [
+        "EMPTY",
+        "SEEDING",
+        "VERIFIED",
+        "DIRTY",
+        "UNKNOWN",
+        null
+      ]
+    },
     "version": {
       "type": "object",
-      "required": ["lab_version", "schema_version"],
-      "properties": {"lab_version": {"type": "string"}, "schema_version": {"const": 1}}
+      "required": [
+        "lab_version",
+        "schema_version"
+      ],
+      "properties": {
+        "lab_version": {
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1
+        }
+      }
     },
     "doctor": {
       "type": "object",
-      "required": ["safe", "problems", "checks", "backend"],
+      "required": [
+        "safe",
+        "problems",
+        "checks",
+        "backend"
+      ],
       "properties": {
-        "safe": {"const": true},
-        "problems": {"type": "array", "maxItems": 0},
-        "backend": {"const": "local"},
+        "safe": {
+          "const": true
+        },
+        "problems": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "backend": {
+          "const": "local"
+        },
         "checks": {
           "type": "object",
-          "required": ["lab_version", "platform", "dependency_lock", "install", "network_file_isolation", "resource_controls", "disk", "sandboxes"],
+          "required": [
+            "lab_version",
+            "platform",
+            "dependency_lock",
+            "install",
+            "network_file_isolation",
+            "resource_controls",
+            "disk",
+            "sandboxes"
+          ],
           "properties": {
-            "network_file_isolation": {"type": "object", "required": ["ok", "interfaces"], "properties": {"ok": {"const": true}, "interfaces": {"const": ["lo"]}}},
-            "resource_controls": {"type": "object", "required": ["ok", "limits"], "properties": {"ok": {"const": true}}},
-            "disk": {"type": "object", "required": ["budget_bytes", "used_bytes", "hard_quota"], "properties": {"hard_quota": {"const": false}}}
+            "network_file_isolation": {
+              "type": "object",
+              "required": [
+                "ok",
+                "interfaces"
+              ],
+              "properties": {
+                "ok": {
+                  "const": true
+                },
+                "interfaces": {
+                  "const": [
+                    "lo"
+                  ]
+                }
+              }
+            },
+            "resource_controls": {
+              "type": "object",
+              "required": [
+                "ok",
+                "limits"
+              ],
+              "properties": {
+                "ok": {
+                  "const": true
+                }
+              }
+            },
+            "disk": {
+              "type": "object",
+              "required": [
+                "budget_bytes",
+                "used_bytes",
+                "hard_quota"
+              ],
+              "properties": {
+                "hard_quota": {
+                  "const": false
+                }
+              }
+            }
           }
         }
       }
     },
     "fixture": {
       "type": "object",
-      "required": ["state", "scenario", "mapping", "failed_operation"],
+      "required": [
+        "state",
+        "scenario",
+        "mapping",
+        "failed_operation"
+      ],
       "properties": {
-        "state": {"$ref": "#/$defs/fixture_state"},
-        "scenario": {"type": ["string", "null"]},
-        "mapping": {"type": "object", "additionalProperties": {"type": "string"}},
-        "failed_operation": {"type": ["object", "string", "null"]},
-        "verification": {"type": ["object", "null"]}
+        "state": {
+          "$ref": "#/$defs/fixture_state"
+        },
+        "scenario": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "mapping": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "failed_operation": {
+          "type": [
+            "object",
+            "string",
+            "null"
+          ]
+        },
+        "verification": {
+          "type": [
+            "object",
+            "null"
+          ]
+        }
       }
     },
     "generation": {
       "type": "object",
-      "required": ["id", "number", "started_at", "lease_deadline", "max_deadline", "region"],
+      "required": [
+        "id",
+        "number",
+        "started_at",
+        "lease_deadline",
+        "max_deadline",
+        "region"
+      ],
       "properties": {
-        "id": {"anyOf": [{"$ref": "#/$defs/hex32"}, {"type": "null"}]},
-        "number": {"type": ["integer", "null"], "minimum": 1},
-        "started_at": {"$ref": "#/$defs/ts_or_null"},
-        "lease_deadline": {"$ref": "#/$defs/ts_or_null"},
-        "max_deadline": {"$ref": "#/$defs/ts_or_null"},
-        "region": {"type": ["string", "null"]}
+        "id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/hex32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "number": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "started_at": {
+          "$ref": "#/$defs/ts_or_null"
+        },
+        "lease_deadline": {
+          "$ref": "#/$defs/ts_or_null"
+        },
+        "max_deadline": {
+          "$ref": "#/$defs/ts_or_null"
+        },
+        "region": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
       }
     },
     "sandbox_brief": {
       "type": "object",
-      "required": ["name", "sandbox_id", "backend", "state", "state_reason", "fixture", "generation", "created_at", "test_mode"],
+      "required": [
+        "name",
+        "sandbox_id",
+        "backend",
+        "state",
+        "state_reason",
+        "fixture",
+        "generation",
+        "created_at",
+        "test_mode"
+      ],
       "properties": {
-        "name": {"$ref": "#/$defs/name"},
-        "sandbox_id": {"$ref": "#/$defs/hex32"},
-        "backend": {"const": "local"},
-        "state": {"$ref": "#/$defs/process_state"},
-        "state_reason": {"type": ["string", "null"]},
-        "fixture": {"$ref": "#/$defs/fixture"},
-        "generation": {"$ref": "#/$defs/generation"},
-        "created_at": {"$ref": "#/$defs/ts"},
-        "test_mode": {"type": "boolean"}
+        "name": {
+          "$ref": "#/$defs/name"
+        },
+        "sandbox_id": {
+          "$ref": "#/$defs/hex32"
+        },
+        "backend": {
+          "const": "local"
+        },
+        "state": {
+          "$ref": "#/$defs/process_state"
+        },
+        "state_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fixture": {
+          "$ref": "#/$defs/fixture"
+        },
+        "generation": {
+          "$ref": "#/$defs/generation"
+        },
+        "created_at": {
+          "$ref": "#/$defs/ts"
+        },
+        "test_mode": {
+          "type": "boolean"
+        }
       },
-      "not": {"anyOf": [{"required": ["credentials"]}, {"required": ["secret"]}, {"required": ["access_key"]}]}
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "credentials"
+            ]
+          },
+          {
+            "required": [
+              "secret"
+            ]
+          },
+          {
+            "required": [
+              "access_key"
+            ]
+          }
+        ]
+      }
     },
     "sandbox_detail": {
       "allOf": [
-        {"$ref": "#/$defs/sandbox_brief"},
+        {
+          "$ref": "#/$defs/sandbox_brief"
+        },
         {
           "type": "object",
-          "required": ["diagnostics", "limits", "baseline", "history"],
+          "required": [
+            "diagnostics",
+            "limits",
+            "baseline",
+            "history"
+          ],
           "properties": {
-            "limits": {"type": ["object", "null"]},
-            "baseline": {"type": ["object", "null"]},
-            "history": {"type": "array", "maxItems": 10},
-            "preflight": {"type": "object"},
-            "resources": {"type": "object"}
+            "limits": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "baseline": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "history": {
+              "type": "array",
+              "maxItems": 10
+            },
+            "preflight": {
+              "type": "object"
+            },
+            "resources": {
+              "type": "object"
+            }
           }
         }
       ]
     },
     "reset": {
       "allOf": [
-        {"$ref": "#/$defs/sandbox_detail"},
-        {"type": "object", "required": ["previous_generation"], "properties": {"previous_generation": {"type": ["string", "null"]}, "seed": {"$ref": "#/$defs/seed"}}}
+        {
+          "$ref": "#/$defs/sandbox_detail"
+        },
+        {
+          "type": "object",
+          "required": [
+            "previous_generation"
+          ],
+          "properties": {
+            "previous_generation": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "seed": {
+              "$ref": "#/$defs/seed"
+            }
+          }
+        }
       ]
     },
     "status": {
       "oneOf": [
         {
           "type": "object",
-          "required": ["sandboxes", "active_generations"],
+          "required": [
+            "sandboxes",
+            "active_generations"
+          ],
           "properties": {
-            "sandboxes": {"type": "array", "items": {"$ref": "#/$defs/sandbox_brief"}},
-            "active_generations": {"type": "integer", "minimum": 0, "maximum": 1}
+            "sandboxes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/sandbox_brief"
+              }
+            },
+            "active_generations": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1
+            }
           }
         },
-        {"$ref": "#/$defs/sandbox_detail"}
+        {
+          "$ref": "#/$defs/sandbox_detail"
+        }
       ]
     },
     "credentials": {
       "type": "object",
-      "required": ["descriptor_version", "sandbox", "generation", "backend", "region", "endpoint", "authentication", "tls", "credentials_ref", "config_ref", "valid_until", "consumption"],
+      "required": [
+        "descriptor_version",
+        "sandbox",
+        "generation",
+        "backend",
+        "region",
+        "endpoint",
+        "authentication",
+        "tls",
+        "credentials_ref",
+        "config_ref",
+        "valid_until",
+        "consumption"
+      ],
       "properties": {
-        "descriptor_version": {"const": 1},
-        "generation": {"$ref": "#/$defs/hex32"},
-        "region": {"const": "us-west-2"},
+        "descriptor_version": {
+          "const": 1
+        },
+        "generation": {
+          "$ref": "#/$defs/hex32"
+        },
+        "region": {
+          "const": "us-west-2"
+        },
         "endpoint": {
           "type": "object",
-          "required": ["url", "context", "reachable_from_host"],
-          "properties": {"url": {"type": "string", "pattern": "^https://127\\.0\\.0\\.1:[0-9]+$"}, "reachable_from_host": {"const": false}}
+          "required": [
+            "url",
+            "context",
+            "reachable_from_host"
+          ],
+          "properties": {
+            "url": {
+              "type": "string",
+              "pattern": "^https://127\\.0\\.0\\.1:[0-9]+$"
+            },
+            "reachable_from_host": {
+              "const": false
+            }
+          }
         },
-        "authentication": {"type": "object", "required": ["mode"], "properties": {"mode": {"const": "sigv4"}}},
-        "tls": {"type": "object", "required": ["ca_ref", "ca_sha256"], "properties": {"ca_ref": {"type": "string", "pattern": "^managed:"}}},
-        "credentials_ref": {"type": "string", "pattern": "^managed:"},
-        "config_ref": {"type": "string", "pattern": "^managed:"},
-        "access_key_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{16}$"}
+        "authentication": {
+          "type": "object",
+          "required": [
+            "mode"
+          ],
+          "properties": {
+            "mode": {
+              "const": "sigv4"
+            }
+          }
+        },
+        "tls": {
+          "type": "object",
+          "required": [
+            "ca_ref",
+            "ca_sha256"
+          ],
+          "properties": {
+            "ca_ref": {
+              "type": "string",
+              "pattern": "^managed:"
+            }
+          }
+        },
+        "credentials_ref": {
+          "type": "string",
+          "pattern": "^managed:"
+        },
+        "config_ref": {
+          "type": "string",
+          "pattern": "^managed:"
+        },
+        "access_key_fingerprint": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{16}$"
+        }
       },
-      "not": {"anyOf": [{"required": ["aws_access_key_id"]}, {"required": ["aws_secret_access_key"]}, {"required": ["secret_access_key"]}]}
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "aws_access_key_id"
+            ]
+          },
+          {
+            "required": [
+              "aws_secret_access_key"
+            ]
+          },
+          {
+            "required": [
+              "secret_access_key"
+            ]
+          }
+        ]
+      }
     },
     "seed": {
       "type": "object",
-      "required": ["name", "generation", "scenario", "fixture_state", "mapping", "verification", "steps"],
+      "required": [
+        "name",
+        "generation",
+        "scenario",
+        "fixture_state",
+        "mapping",
+        "verification",
+        "steps"
+      ],
       "properties": {
-        "fixture_state": {"const": "VERIFIED"},
-        "scenario": {"enum": ["aws-empty", "aws-minimal"]},
-        "verification": {"type": "object", "required": ["passed", "assertions"], "properties": {"passed": {"const": true}}}
+        "fixture_state": {
+          "const": "VERIFIED"
+        },
+        "scenario": {
+          "enum": [
+            "aws-empty",
+            "aws-minimal"
+          ]
+        },
+        "verification": {
+          "type": "object",
+          "required": [
+            "passed",
+            "assertions"
+          ],
+          "properties": {
+            "passed": {
+              "const": true
+            }
+          }
+        }
       }
     },
     "destroy": {
       "type": "object",
-      "required": ["name", "destroyed", "absent"],
-      "properties": {"destroyed": {"type": "boolean"}, "absent": {"type": "boolean"}}
+      "required": [
+        "name",
+        "destroyed",
+        "absent"
+      ],
+      "properties": {
+        "destroyed": {
+          "type": "boolean"
+        },
+        "absent": {
+          "type": "boolean"
+        }
+      }
     },
     "extend": {
       "type": "object",
-      "required": ["name", "generation", "lease_deadline", "max_deadline"],
-      "properties": {"lease_deadline": {"$ref": "#/$defs/ts"}, "max_deadline": {"$ref": "#/$defs/ts"}}
+      "required": [
+        "name",
+        "generation",
+        "lease_deadline",
+        "max_deadline"
+      ],
+      "properties": {
+        "lease_deadline": {
+          "$ref": "#/$defs/ts"
+        },
+        "max_deadline": {
+          "$ref": "#/$defs/ts"
+        }
+      }
     },
     "logs": {
       "type": "object",
-      "required": ["name", "lines", "returned", "available", "truncated"],
+      "required": [
+        "name",
+        "lines",
+        "returned",
+        "available",
+        "truncated"
+      ],
       "properties": {
-        "lines": {"type": "array", "items": {"type": "string", "maxLength": 1000}, "maxItems": 200},
-        "returned": {"type": "integer", "minimum": 0, "maximum": 200},
-        "available": {"type": "integer", "minimum": 0},
-        "truncated": {"type": "boolean"}
+        "lines": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "maxItems": 200
+        },
+        "returned": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200
+        },
+        "available": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "truncated": {
+          "type": "boolean"
+        }
       }
     },
     "scenarios": {
       "type": "object",
-      "required": ["scenarios", "future_proposals_not_supported"],
+      "required": [
+        "scenarios",
+        "future_proposals_not_supported"
+      ],
       "properties": {
         "scenarios": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["id", "version", "description", "required_operations", "operation_qualification", "qualified_on", "resources"]
+            "required": [
+              "id",
+              "version",
+              "description",
+              "required_operations",
+              "operation_qualification",
+              "qualified_on",
+              "resources"
+            ]
           }
         }
       }
     },
     "aws": {
       "type": "object",
-      "required": ["service", "operation", "mutating", "response", "fixture_state", "generation"],
+      "required": [
+        "service",
+        "operation",
+        "mutating",
+        "response",
+        "fixture_state",
+        "generation"
+      ],
       "properties": {
-        "service": {"enum": ["sts", "s3", "ec2"]},
-        "mutating": {"type": "boolean"},
-        "response": {"type": "object"},
-        "fixture_state": {"$ref": "#/$defs/fixture_state"},
-        "generation": {"$ref": "#/$defs/hex32"}
+        "service": {
+          "enum": [
+            "sts",
+            "s3",
+            "ec2"
+          ]
+        },
+        "mutating": {
+          "type": "boolean"
+        },
+        "response": {
+          "type": "object"
+        },
+        "fixture_state": {
+          "$ref": "#/$defs/fixture_state"
+        },
+        "generation": {
+          "$ref": "#/$defs/hex32"
+        }
+      }
+    },
+    "help": {
+      "type": "object",
+      "required": [
+        "usage",
+        "commands"
+      ],
+      "properties": {
+        "usage": {
+          "type": "string"
+        },
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     }
   }

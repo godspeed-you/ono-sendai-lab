@@ -286,3 +286,86 @@ def test_read_only_aws_reports_expiry_consistently(lab):
         with pytest.raises(LabError) as exc:
             lab.aws("one", tokens)
         assert exc.value.code == "lease_expired"
+
+
+def test_unverified_stop_keeps_the_slot_and_is_retried(lab):
+    """Review M1: a failed stop must not free the slot or let destroy claim success."""
+    gen = lab.create("one")["generation"]["id"]
+    lab.fake.alive[gen] = False
+    lab.fake.terminal[gen] = ("FAILED", "emulator-died")
+    real_stop = lab.fake.stop
+
+    def failing_stop(runtime):
+        raise LabError("cleanup_failed", "unit still deactivating")
+
+    lab.fake.stop = failing_stop
+    status = lab.status("one")
+    assert status["state"] == "FAILED" and status["diagnostics"]["cleanup_error"]
+    with pytest.raises(LabError) as exc:
+        lab.create("two")
+    assert exc.value.code == "slot_busy"
+    with pytest.raises(LabError) as exc:
+        lab.destroy("one")
+    assert exc.value.code == "cleanup_failed"
+    assert lab.registry.find("one") is not None
+    lab.fake.stop = real_stop
+    lab.status("one")  # reconcile retries the stop and now verifies it
+    assert lab.registry.get("one")["generation"]["runtime"]["ended"] is True
+    assert lab.create("two")["state"] == "READY"
+
+
+def test_reset_refusals_leave_the_running_generation_alone(lab):
+    """Review m1: validation and admission happen before the old generation stops."""
+    gen = lab.create("one")["generation"]["id"]
+    with pytest.raises(LabError) as exc:
+        lab.reset("one", startup_timeout=0)
+    assert exc.value.code == "invalid_argument"
+    assert lab.fake.alive[gen] is True and lab.registry.get("one")["state"] == "READY"
+
+
+def test_extend_after_deadline_cannot_revive(lab):
+    """Review m3: an extend landing after the deadline but before the watchdog tick is refused."""
+    lab.create("one")
+    rec = lab.registry.get("one")
+    rec["generation"]["lease_deadline"] = time.time() - 0.1
+    lab.registry.save(rec)
+    with pytest.raises(LabError) as exc:
+        lab.extend("one", 5)
+    assert exc.value.code == "lease_expired"
+
+
+def test_slot_lock_serialises_registries_sharing_one_runtime_dir(settings, tmp_path, monkeypatch):
+    """Review M2: two state directories must not both pass admission."""
+    import threading
+    from dataclasses import replace
+
+    fake = FakeBackend()
+    slow_start = fake.start
+
+    def start(spec, runtime, logs_dir):
+        time.sleep(1.0)
+        return slow_start(spec, runtime, logs_dir)
+
+    fake.start = start
+    monkeypatch.setattr(lifecycle, "get_backend", lambda name, s: fake)
+    # census: every live fake generation that a registry does not know is foreign to it
+    monkeypatch.setattr(
+        lifecycle, "foreign_units", lambda s, known: [f"u-{g}" for g, a in fake.alive.items() if a and f"u-{g}" not in known]
+    )
+    lab_a = lifecycle.Lab(settings)
+    lab_b = lifecycle.Lab(replace(settings, state_dir=tmp_path / "other-state"))
+    results = {}
+
+    def run(lab, name):
+        try:
+            results[name] = lab.create(name)["state"]
+        except LabError as exc:
+            results[name] = exc.code
+
+    threads = [threading.Thread(target=run, args=(lab_a, "a")), threading.Thread(target=run, args=(lab_b, "b"))]
+    for t in threads:
+        t.start()
+        time.sleep(0.1)
+    for t in threads:
+        t.join()
+    assert sorted(results.values()) == ["READY", "slot_busy"], results

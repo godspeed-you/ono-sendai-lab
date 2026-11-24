@@ -11,7 +11,7 @@ Status: accepted · 2026-11-24 · Requirements: LAB-033, LAB-034, LAB-040, LAB-0
 
 `$XDG_STATE_HOME/ono-sendai-lab/sandboxes/<id>/record.json` (0600 in 0700 directories), written atomically (temp file, fsync, rename), read with `O_NOFOLLOW`. One global `flock` serialises every mutating command; read-only `aws` and `logs` take it shared. Records hold no secrets: only references, digests of the CA and a 16-hex fingerprint of the access key id.
 
-State machines are normative and machine-readable in `docs/contracts/lifecycle-states.json`. The single-slot rule counts records in STARTING/READY/STOPPING **and** any active lab unit that no record of this state directory owns.
+State machines are normative and machine-readable in `docs/contracts/lifecycle-states.json`. The single-slot rule counts records in STARTING/READY/STOPPING, records whose runtime has not been verified dead (a failed stop keeps the slot occupied and is retried by every reconciliation; `destroy` fails with `cleanup_failed` until the stop is verified), **and** any active lab unit that no record of this state directory owns. Admission and the start of a generation run under a per-user slot lock in `$XDG_RUNTIME_DIR/ono-sendai-lab/slot.lock`, shared by every state directory of the user, so two registries cannot both pass admission (lock order: registry lock, then slot lock). `reset` performs all validation and admission before it stops the old generation.
 
 ## Process ownership
 
@@ -26,7 +26,7 @@ A generation is owned through its systemd unit, never through a PID:
 
 - Default lease 30 min, absolute lifetime 120 min from generation start, upstream `--idle-timeout` 15 min.
 - The absolute lifetime is enforced twice: by the supervisor watchdog and by systemd `RuntimeMaxSec` (a kernel/service mechanism that works even if the supervisor hangs). `RuntimeMaxSec` cannot change at runtime (verified on systemd 259), so the extendable lease is enforced by the supervisor watchdog, which reads the lease the lifecycle sets over the worker channel. Both run inside the unit and keep working after the CLI exits.
-- `extend --minutes N` adds N minutes; beyond the absolute lifetime it fails with `lease_cap_exceeded` (exit 4); after expiry with `lease_expired` (exit 3). There is no revival.
+- `extend --minutes N` adds N minutes; beyond the absolute lifetime it fails with `lease_cap_exceeded` (exit 4); once the deadline has passed it fails with `lease_expired` (exit 3), checked by the CLI and again by the supervisor, so an extension racing the watchdog cannot revive a lease.
 - The supervisor never polls the emulator; `status` talks only to the supervisor. The upstream health route does not reset the idle timer (observed on 1.0.598).
 
 ## Failure semantics

@@ -30,7 +30,12 @@ class _Parser(argparse.ArgumentParser):
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = _Parser(prog="aws-lab", description="Disposable, contained AWS Emulator sandboxes (ono-sendai-lab).")
+    p = _Parser(
+        prog="aws-lab",
+        description="Disposable, contained AWS Emulator sandboxes (ono-sendai-lab).",
+        epilog="Global option: --json (anywhere before --) prints exactly one JSON document on stdout. "
+        "Exit codes: 0 ok, 2 usage, 3 not found/conflict/stale, 4 refused, 5 upstream, 6 lifecycle/internal.",
+    )
     p.add_argument("--version", action="store_true", help="print the lab version and exit")
     sub = p.add_subparsers(dest="command", parser_class=_Parser)
     sub.add_parser("doctor", help="preflight: versions, platform, isolation, resource controls, disk")
@@ -80,8 +85,10 @@ def _split(argv: list[str]) -> tuple[list[str], list[str], bool]:
 
 
 def run(argv: list[str]) -> tuple[dict, int]:
-    head, aws_tokens, _ = _split(argv)
+    head, aws_tokens, as_json = _split(argv)
     parser = build_parser()
+    if as_json and ("-h" in head or "--help" in head):
+        return {"command": "help", "result": {"usage": parser.format_help(), "commands": list(COMMANDS)}}, 0
     args = parser.parse_args(head)
     if args.version:
         return {"command": "version", "result": {"lab_version": __version__, "schema_version": SCHEMA_VERSION}}, 0

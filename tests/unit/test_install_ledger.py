@@ -71,3 +71,15 @@ def test_ledger_counts_lab_locations(settings):
     (settings.data_dir / "blob").write_bytes(b"x" * 100_000)
     snap = ledger.measure(settings)
     assert snap["locations"]["data"] >= 100_000
+
+
+def test_uninstall_fails_closed_without_systemd(settings):
+    """Review m8: an unreachable user manager is no proof that no unit runs."""
+    from dataclasses import replace
+
+    from ono_sendai_lab.bootstrap import uninstall
+
+    blind = replace(settings, simulate_missing=frozenset({"systemd"}))
+    with pytest.raises(LabError) as exc:
+        uninstall(blind)
+    assert exc.value.code == "resource_control_unavailable"

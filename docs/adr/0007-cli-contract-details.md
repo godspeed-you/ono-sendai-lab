@@ -38,4 +38,6 @@ Mutating calls (`create-bucket`, `delete-bucket`) mark an EMPTY or VERIFIED fixt
 
 ## Logs
 
-`logs NAME [--tail N]`: default 50, maximum 200 lines, from the lab's own ring logs (`lab.log`, `lab.log.1`, supervisor stderr). Upstream JSON lines are reduced to timestamp, level, target, message and the endpoint fields before they are written; every line is redacted again on output; `truncated` reports whether older lines exist.
+`logs NAME [--tail N]`: default 50, maximum 200 lines, from the sandbox's ring log (`lab.log`, `lab.log.1`, 256 KiB each, shared by its generations) and the unit's `supervisor.stderr` (only output from before the supervisor redirects its own stderr into the ring log, e.g. a bwrap error). Upstream stdout JSON lines are reduced to timestamp, level, target, message and the endpoint fields before they are written; upstream stderr lines (plain text such as the telemetry notice or a fatal error) are redacted and cut to 300 characters. Every line is redacted again on output; `truncated` reports whether older lines exist.
+
+`--json --help` prints one document with command `help` and the usage text.

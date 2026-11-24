@@ -298,12 +298,18 @@ def install(settings, lock_path: Path, *, dev: bool, offline: bool, dry_run: boo
     steps = plan(settings, lock, dev)
     result["plan"] = steps
     projected = _projected_bytes(settings, lock, dev)
+    if dry_run:
+        # Read-only: measure and admit, write nothing (no state dir, no ledger).
+        result["admission"] = ledger.admit(settings, projected, "bootstrap")
+        result["dry_run"] = True
+        return result
+    if offline and (
+        not _venv_current(settings.runtime_venv, settings, "runtime") or (dev and not _venv_current(settings.dev_venv, settings, "dev"))
+    ):
+        raise LabError("install_invalid", "--offline cannot build the hashed venvs (they come from PyPI); run without --offline once")
     ensure_private_dir(settings.state_dir)
     ledger.init_ledger(settings, extra_tracked)
     result["admission"] = ledger.admit(settings, projected, "bootstrap")
-    if dry_run:
-        result["dry_run"] = True
-        return result
     started = time.monotonic()
     deb = _ensure_asset(settings, lock, offline)
     result["signature"] = _verify_signature(settings, lock, deb)
@@ -347,11 +353,12 @@ def install_dev_tools(settings) -> dict:
 
 
 def uninstall(settings) -> dict:
-    active = []
     try:
-        active = [u["unit"] for u in isolation.list_lab_units(settings)]
-    except LabError:
-        active = []
+        active = [u["unit"] for u in isolation.list_lab_units(settings) if u.get("active") in ("active", "activating", "deactivating")]
+    except LabError as exc:
+        raise LabError(
+            "resource_control_unavailable", "cannot verify that no lab unit is running; refusing to uninstall", exc.details
+        ) from exc
     records = list(settings.sandboxes_dir.glob("*/record.json")) if settings.sandboxes_dir.exists() else []
     if active or records:
         raise LabError(
@@ -372,7 +379,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="bootstrap", description="Install or uninstall ono-sendai-lab (no sudo).")
     parser.add_argument("--plan", action="store_true", help="preflight and print the plan without changing anything")
     parser.add_argument("--dev", action="store_true", help="also install the hashed development toolchain venv")
-    parser.add_argument("--offline", action="store_true", help="use only cached downloads")
+    parser.add_argument("--offline", action="store_true", help="use only the cached package/signature; venvs must already exist")
     parser.add_argument("--lock", default=None, help="alternative lock file (tests)")
     parser.add_argument("--uninstall", action="store_true", help="remove every lab-owned location")
     parser.add_argument("--dev-tools-only", action="store_true", help="only the hashed gate toolchain (standard CI runners)")
