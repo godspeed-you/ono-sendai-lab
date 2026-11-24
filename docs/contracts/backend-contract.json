@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "title": "Transport-neutral backend contract (LAB-020, LAB-021, LAB-083)",
+  "implemented_backends": ["local"],
+  "documented_future_backends": ["remote-vm"],
+  "unsupported_selection": "unsupported_backend (exit 4); no stub pretends to work",
+  "logical_operations": {
+    "preflight": "prove containment and resource controls; refuse unsafe hosts",
+    "start": "start a generation and return an opaque runtime mapping after verified health, signed identity, isolation and limits",
+    "observe": "alive, or terminal state FAILED/EXPIRED/STOPPED with reason",
+    "stop": "stop only the owned generation and verify death",
+    "call": "guarded worker operation inside the managed context (ping, activate, set-lease, describe, aws, baseline, seed, verify, metrics; probe in test mode)",
+    "inspect": "safe diagnostics: limits and usage, never secrets",
+    "cleanup": "remove backend-private runtime files after verified death",
+    "endpoint_context": "endpoint described in the backend's own context"
+  },
+  "portable": ["sandbox name", "sandbox id", "generation id and number", "lease and lifetime deadlines", "fixture state and scenario", "logical-to-actual mapping", "scenario manifests", "JSON schemas", "dependency pins", "qualification tests"],
+  "backend_specific_not_portable": ["host paths", "systemd unit name and InvocationID", "boot id", "control group", "PIDs", "ports", "CA files", "emulator keys", "worker socket path"],
+  "lifecycle_owns": ["identity", "generations", "leases", "fixture state", "single-slot admission", "reconciliation"],
+  "remote_prerequisites_before_enabling": ["authenticated private control transport (e.g. SSH over WireGuard)", "verified host identity", "per-user authorization and sandbox ownership", "per-owner and aggregate quotas", "a reviewed specification"]
+}

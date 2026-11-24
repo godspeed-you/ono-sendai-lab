@@ -32,14 +32,14 @@ _PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"\bEMULATOR[0-9A-F]{12}\b"), REDACTED),
     (re.compile(r"\b(?:AKIA|ASIA|AGPA|AIDA|AROA|ANPA|ANVA|AIPA)[0-9A-Z]{16}\b"), REDACTED),
     # 40-character secret-like tokens (emulator secrets are 40 uppercase hex)
-    (re.compile(r"(?<![A-Za-z0-9/+=])[0-9A-F]{40}(?![A-Za-z0-9/+=])"), REDACTED),
+    (re.compile(r"(?<![A-Za-z0-9/+])[0-9A-F]{40}(?![A-Za-z0-9/+=])"), REDACTED),
     # Long opaque tokens (session tokens, signed blobs)
     (re.compile(r"(?<![A-Za-z0-9/+=_-])[A-Za-z0-9/+=_-]{120,}"), REDACTED),
 ]
 
 # AWS-style secret keys: 40 base64-ish characters with at least one uppercase
 # letter. Lowercase-only hex (Git commit IDs) stays readable.
-_SECRET40 = re.compile(r"(?<![A-Za-z0-9/+=])[A-Za-z0-9/+]{40}(?![A-Za-z0-9/+=])")
+_SECRET40 = re.compile(r"(?<![A-Za-z0-9/+])[A-Za-z0-9/+]{40}(?![A-Za-z0-9/+=])")
 
 
 def _secret40(match: re.Match[str]) -> str:

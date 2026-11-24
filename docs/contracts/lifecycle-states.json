@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "process_states": [
+    "STARTING",
+    "READY",
+    "STOPPING",
+    "STOPPED",
+    "FAILED",
+    "EXPIRED"
+  ],
+  "active_states": [
+    "STARTING",
+    "READY",
+    "STOPPING"
+  ],
+  "process_transitions": {
+    "None": [
+      "STARTING"
+    ],
+    "STARTING": [
+      "FAILED",
+      "READY",
+      "STOPPING"
+    ],
+    "READY": [
+      "EXPIRED",
+      "FAILED",
+      "STOPPING"
+    ],
+    "STOPPING": [
+      "FAILED",
+      "STOPPED"
+    ],
+    "STOPPED": [
+      "STARTING"
+    ],
+    "FAILED": [
+      "STARTING",
+      "STOPPED",
+      "STOPPING"
+    ],
+    "EXPIRED": [
+      "STARTING",
+      "STOPPED",
+      "STOPPING"
+    ]
+  },
+  "fixture_states": [
+    "EMPTY",
+    "SEEDING",
+    "VERIFIED",
+    "DIRTY",
+    "UNKNOWN"
+  ],
+  "fixture_transitions": {
+    "None": [
+      "EMPTY",
+      "UNKNOWN"
+    ],
+    "UNKNOWN": [
+      "EMPTY",
+      "UNKNOWN"
+    ],
+    "EMPTY": [
+      "DIRTY",
+      "SEEDING",
+      "UNKNOWN",
+      "VERIFIED"
+    ],
+    "SEEDING": [
+      "DIRTY",
+      "UNKNOWN",
+      "VERIFIED"
+    ],
+    "VERIFIED": [
+      "DIRTY",
+      "UNKNOWN",
+      "VERIFIED"
+    ],
+    "DIRTY": [
+      "DIRTY",
+      "UNKNOWN"
+    ]
+  },
+  "notes": {
+    "None": "no previous state (new record)",
+    "single_slot": "at most one record across all sandboxes may be in an active state",
+    "EXPIRED": "lease deadline, absolute lifetime (RuntimeMaxSec) or upstream idle timeout",
+    "FAILED": "startup failure, unexpected runtime death, OOM, interrupted operation or host reboot",
+    "STOPPED": "lab-initiated stop verified (reset/destroy)",
+    "DIRTY": "partial/failed seed, interrupted seed, failed verification or any user mutation; only reset clears it",
+    "UNKNOWN": "new generation before its baseline is observed, or after the runtime ended"
+  }
+}

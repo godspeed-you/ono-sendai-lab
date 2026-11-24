@@ -40,5 +40,6 @@ ignore = [
 testpaths = ["tests"]
 markers = [
   "acceptance: real emulator / OS-control acceptance (run by scripts/acceptance.sh)",
+  "row(id): acceptance matrix row covered by this test",
 ]
 addopts = "-ra --strict-markers"

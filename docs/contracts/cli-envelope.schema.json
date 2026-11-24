@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/godspeed-you/ono-sendai-lab/docs/contracts/cli-envelope.schema.json",
+  "title": "aws-lab --json envelope (contract version 1)",
+  "description": "Exactly one document on stdout per invocation. Success carries `result` (shape per command, see cli-results.schema.json); failure carries `error`. Absent optional fields are omitted; nullable fields are listed as such in the result schemas.",
+  "type": "object",
+  "required": ["schema_version", "ok", "command"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "ok": {"type": "boolean"},
+    "command": {
+      "enum": ["version", "doctor", "create", "status", "credentials", "seed", "reset", "destroy", "extend", "logs", "scenarios", "aws", "aws-lab", "bootstrap"]
+    },
+    "result": {"type": "object"},
+    "error": {"$ref": "#/$defs/error"}
+  },
+  "additionalProperties": false,
+  "oneOf": [
+    {"properties": {"ok": {"const": true}}, "required": ["result"], "not": {"required": ["error"]}},
+    {"properties": {"ok": {"const": false}}, "required": ["error"], "not": {"required": ["result"]}}
+  ],
+  "allOf": [
+    {"if": {"properties": {"ok": {"const": true}, "command": {"const": "version"}}}, "then": {"properties": {"result": {"$ref": "cli-results.schema.json#/$defs/version"}}}},
+    {"if": {"properties": {"ok": {"const": true}, "command": {"const": "doctor"}}}, "then": {"properties": {"result": {"$ref": "cli-results.schema.json#/$defs/doctor"}}}},
+    {"if": {"properties": {"ok": {"const": true}, "command": {"const": "create"}}}, "then": {"properties": {"result": {"$ref": "cli-results.schema.json#/$defs/sandbox_detail"}}}},
+    {"if": {"properties": {"ok": {"const": true}, "command": {"const": "reset"}}}, "then": {"properties": {"result": {"$ref": "cli-results.schema.json#/$defs/reset"}}}},
+    {"if": {"properties": {"ok": {"const": true}, "command": {"const": "status"}}}, "then": {"properties": {"result": {"$ref": "cli-results.schema.json#/$defs/status"}}}},
+    {"if": {"properties": {"ok": {"const": true}, "command": {"const": "credentials"}}}, "then": {"properties": {"result": {"$ref": "cli-results.schema.json#/$defs/credentials"}}}},
+    {"if": {"properties": {"ok": {"const": true}, "command": {"const": "seed"}}}, "then": {"properties": {"result": {"$ref": "cli-results.schema.json#/$defs/seed"}}}},
+    {"if": {"properties": {"ok": {"const": true}, "command": {"const": "destroy"}}}, "then": {"properties": {"result": {"$ref": "cli-results.schema.json#/$defs/destroy"}}}},
+    {"if": {"properties": {"ok": {"const": true}, "command": {"const": "extend"}}}, "then": {"properties": {"result": {"$ref": "cli-results.schema.json#/$defs/extend"}}}},
+    {"if": {"properties": {"ok": {"const": true}, "command": {"const": "logs"}}}, "then": {"properties": {"result": {"$ref": "cli-results.schema.json#/$defs/logs"}}}},
+    {"if": {"properties": {"ok": {"const": true}, "command": {"const": "scenarios"}}}, "then": {"properties": {"result": {"$ref": "cli-results.schema.json#/$defs/scenarios"}}}},
+    {"if": {"properties": {"ok": {"const": true}, "command": {"const": "aws"}}}, "then": {"properties": {"result": {"$ref": "cli-results.schema.json#/$defs/aws"}}}}
+  ],
+  "$defs": {
+    "error": {
+      "type": "object",
+      "required": ["code", "message", "retryable", "exit_code", "details"],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "description": "Stable lab-level code; the full table is error-codes.json.",
+          "enum": [
+            "usage_error", "invalid_name", "invalid_argument", "operation_not_allowed", "unknown_scenario",
+            "not_found", "name_conflict", "stale_generation", "not_ready", "lease_expired", "fixture_state_conflict", "lock_timeout",
+            "preflight_failed", "isolation_unavailable", "resource_control_unavailable", "unsupported_backend", "slot_busy",
+            "disk_budget_exceeded", "lease_cap_exceeded", "install_invalid", "unsafe_configuration",
+            "upstream_error", "aws_error", "transport_error", "timeout", "startup_failed", "seed_failed", "verification_failed",
+            "lifecycle_failure", "cleanup_failed", "internal_error"
+          ]
+        },
+        "message": {"type": "string", "maxLength": 2000},
+        "retryable": {"type": "boolean"},
+        "exit_code": {"enum": [2, 3, 4, 5, 6]},
+        "details": {"type": "object", "description": "Redacted structured context, e.g. aws_code/http_status for aws_error, remedy hints."}
+      }
+    }
+  }
+}

@@ -46,9 +46,15 @@ class Backend(ABC):
         """Prove containment and resource controls; raise LabError if unsafe."""
 
     @abstractmethod
-    def start(self, spec: GenerationSpec, logs_dir) -> dict:
-        """Start a generation and return its opaque runtime mapping once the
-        backend has verified health, signed identity, isolation and limits."""
+    def prepare(self, spec: GenerationSpec) -> dict:
+        """Return the opaque runtime skeleton that identifies the generation
+        before it is launched; the lifecycle persists it first."""
+
+    @abstractmethod
+    def start(self, spec: GenerationSpec, runtime: dict, logs_dir) -> dict:
+        """Launch the prepared generation and return its runtime mapping once
+        health, signed identity, isolation and limits are verified. On any
+        failure or interruption the backend stops what it launched."""
 
     @abstractmethod
     def observe(self, runtime: dict) -> RuntimeObservation:

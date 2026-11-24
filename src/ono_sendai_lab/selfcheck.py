@@ -25,6 +25,7 @@ SENSITIVE_PATHS = (
     "/mnt",
     "/media",
 )
+INERT_AWS_FILE = "/nonexistent/ono-sendai-lab/aws-config"
 PROXY_VARS = {"http_proxy", "https_proxy", "all_proxy", "no_proxy", "ftp_proxy"}
 ALLOWED_ENV = {
     "HOME",
@@ -35,6 +36,10 @@ ALLOWED_ENV = {
     "AWS_EC2_METADATA_DISABLED",
     "AWS_LAB_SANDBOX",
     "PWD",
+    # set by the managed client itself (awsclient.harden_environment) to inert values
+    "AWS_CONFIG_FILE",
+    "AWS_SHARED_CREDENTIALS_FILE",
+    "AWS_DISABLE_HOST_PREFIX_INJECTION",
 }
 
 
@@ -117,6 +122,10 @@ def report() -> dict:
     unexpected_env = [n for n in env_names if n not in ALLOWED_ENV]
     if unexpected_env:
         problems.append(f"unexpected environment variables: {unexpected_env}")
+    inert = {"AWS_CONFIG_FILE": INERT_AWS_FILE, "AWS_SHARED_CREDENTIALS_FILE": INERT_AWS_FILE, "AWS_DISABLE_HOST_PREFIX_INJECTION": "true"}
+    wrong = [n for n, v in inert.items() if n in os.environ and os.environ[n] != v]
+    if wrong:
+        problems.append(f"lab-controlled variables carry unexpected values: {wrong}")
     visible = [p for p in SENSITIVE_PATHS if os.path.lexists(p)]
     if visible:
         problems.append(f"sensitive host paths visible: {visible}")

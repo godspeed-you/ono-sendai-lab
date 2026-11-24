@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/godspeed-you/ono-sendai-lab/docs/contracts/operation-compatibility.schema.json",
+  "title": "Operation compatibility manifest (operation-compatibility.json)",
+  "description": "Only directly tested operations may be `verified`. Service-wide fidelity scores never qualify an operation.",
+  "type": "object",
+  "required": ["schema_version", "emulator_version", "client", "region", "generated_from", "operations"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "emulator_version": {"type": "string"},
+    "client": {"type": "object", "required": ["name", "version"]},
+    "region": {"const": "us-west-2"},
+    "generated_from": {"type": "string"},
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["service", "operation", "surface", "scenarios", "observed_outcome", "evidence", "test_reference", "known_limitation", "qualification_status", "upstream_fidelity_reference"],
+        "properties": {
+          "service": {"enum": ["sts", "s3", "ec2"]},
+          "operation": {"type": "string"},
+          "surface": {"enum": ["public", "fixture-internal"]},
+          "scenarios": {"type": "array", "items": {"type": "string"}},
+          "observed_outcome": {"type": "string"},
+          "evidence": {"type": "string"},
+          "test_reference": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "known_limitation": {"type": ["string", "null"]},
+          "qualification_status": {"enum": ["verified", "failed", "unqualified"]},
+          "upstream_fidelity_reference": {"type": ["string", "null"]}
+        }
+      }
+    }
+  }
+}

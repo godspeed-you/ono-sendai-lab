@@ -19,7 +19,7 @@ from .backend import GenerationSpec, get_backend
 from .config import LOGS_DEFAULT_LINES, LOGS_MAX_LINES, REGION, STARTUP_TIMEOUT_DEFAULT, STARTUP_TIMEOUT_MAX
 from .errors import LabError
 from .install import load_lock
-from .local_backend import orphan_units
+from .local_backend import foreign_units
 from .redact import redact_text
 from .registry import ACTIVE_STATES, HISTORY_LIMIT, Registry, new_id, validate_name
 
@@ -75,7 +75,9 @@ class Lab:
             )
             del hist[:-HISTORY_LIMIT]
         if gen.get("runtime"):
-            gen["runtime"] = {k: gen["runtime"].get(k) for k in ("backend", "unit", "boot_id", "invocation_id", "generation_id", "ctl_dir")}
+            gen["runtime"] = {
+                k: gen["runtime"].get(k) for k in ("backend", "unit", "description", "boot_id", "invocation_id", "generation_id", "ctl_dir")
+            }
             gen["runtime"]["ended"] = True
 
     # ------------------------------------------------------------ reconcile
@@ -134,11 +136,11 @@ class Lab:
         return record
 
     def reconcile_all(self) -> list[dict]:
-        records = [self.reconcile(r) for r in self.registry.all()]
+        return [self.reconcile(r) for r in self.registry.all()]
+
+    def foreign(self, records: list[dict]) -> list[str]:
         known = {((r.get("generation") or {}).get("runtime") or {}).get("unit") for r in records}
-        for unit in orphan_units(self.settings, {u for u in known if u}):
-            isolation.stop_unit(self.settings, unit)
-        return records
+        return foreign_units(self.settings, {u for u in known if u})
 
     def _active(self, records: list[dict]) -> list[dict]:
         return [r for r in records if r.get("state") in ACTIVE_STATES]
@@ -183,7 +185,7 @@ class Lab:
             problems.append(f"disk measurement failed: {type(exc).__name__}")
         try:
             records = self.registry.all()
-            checks["sandboxes"] = {"count": len(records), "active": len(self._active(records))}
+            checks["sandboxes"] = {"count": len(records), "active": len(self._active(records)), "foreign_units": self.foreign(records)}
         except LabError as exc:
             problems.append(exc.message)
         checks["test_mode"] = self.settings.test_mode
@@ -245,8 +247,10 @@ class Lab:
         self.registry.set_fixture(record, "UNKNOWN", scenario=None, mapping={}, failed_operation=None, verification=None)
         record["operation"] = {"kind": "start", "pid": os.getpid(), "started_at": time.time()}
         self.registry.save(record)
+        record["generation"]["runtime"] = backend.prepare(spec)
+        self.registry.save(record)
         try:
-            runtime = backend.start(spec, self.registry.logs_dir(record))
+            runtime = backend.start(spec, record["generation"]["runtime"], self.registry.logs_dir(record))
             record["generation"]["runtime"] = runtime
             self.registry.save(record)
             baseline = backend.call(runtime, "baseline", {}, timeout=60)
@@ -305,6 +309,13 @@ class Lab:
                 "slot_busy",
                 "another sandbox generation is active; v0.1.0 allows exactly one",
                 {"active": [r["name"] for r in active], "remedy": "aws-lab destroy NAME or wait"},
+            )
+        foreign = self.foreign(records)
+        if foreign:
+            raise LabError(
+                "slot_busy",
+                "a lab generation not owned by this state directory is active",
+                {"units": foreign, "remedy": "destroy it with the aws-lab state that created it, or `systemctl --user stop UNIT`"},
             )
         ledger.admit(self.settings, START_DISK_PROJECTION, "sandbox start")
 
@@ -400,10 +411,7 @@ class Lab:
         gen_id = (record.get("generation") or {}).get("id")
         if generation is not None and generation != gen_id:
             raise LabError("stale_generation", "the referenced generation is no longer current", {"current_generation": gen_id})
-        if record.get("state") == "EXPIRED":
-            raise LabError("lease_expired", "the sandbox generation expired; reset or destroy it", {"reason": record.get("state_reason")})
-        if record.get("state") != "READY":
-            raise LabError("not_ready", f"sandbox is {record.get('state')}, not READY", {"reason": record.get("state_reason")})
+        self._refuse_unless_ready(record)
         return record
 
     def credentials(self, name: str, generation: str | None = None) -> dict:
@@ -618,12 +626,22 @@ class Lab:
         gen_id = (record.get("generation") or {}).get("id")
         if generation is not None and generation != gen_id:
             raise LabError("stale_generation", "the referenced generation is no longer current", {"current_generation": gen_id})
-        if record.get("state") != "READY":
-            raise LabError("not_ready", f"sandbox is {record.get('state')}, not READY")
+        self._refuse_unless_ready(record)
         obs = self.backend_for(record).observe(record["generation"]["runtime"])
-        if not obs.alive or time.time() >= record["generation"]["lease_deadline"]:
+        if time.time() >= record["generation"]["lease_deadline"] or obs.terminal_state == "EXPIRED":
+            raise LabError(
+                "lease_expired", "the sandbox generation expired; reset or destroy it", {"reason": obs.reason or "lease-expired"}
+            )
+        if not obs.alive:
             raise LabError("not_ready", "sandbox generation is no longer alive; run `aws-lab status` to reconcile", {"reason": obs.reason})
         return record
+
+    @staticmethod
+    def _refuse_unless_ready(record: dict) -> None:
+        if record.get("state") == "EXPIRED":
+            raise LabError("lease_expired", "the sandbox generation expired; reset or destroy it", {"reason": record.get("state_reason")})
+        if record.get("state") != "READY":
+            raise LabError("not_ready", f"sandbox is {record.get('state')}, not READY", {"reason": record.get("state_reason")})
 
 
 def _iso(ts) -> str | None:

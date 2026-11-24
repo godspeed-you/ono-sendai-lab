@@ -130,9 +130,9 @@ class Registry:
         return rec
 
     def save(self, record: dict) -> None:
-        directory = ensure_private_dir(self._dir(record["sandbox_id"]))
+        ensure_private_dir(self.settings.state_dir)
         ensure_private_dir(self.settings.sandboxes_dir)
-        ensure_private_dir(directory)
+        directory = ensure_private_dir(self._dir(record["sandbox_id"]))
         ensure_private_dir(directory / "logs")
         record["updated_at"] = time.time()
         atomic_write_json(directory / "record.json", record)

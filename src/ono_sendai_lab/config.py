@@ -138,8 +138,8 @@ class Settings:
         return locs
 
 
-def _xdg(var: str, default: str) -> Path:
-    value = os.environ.get(var)
+def _xdg(env, var: str, default: str) -> Path:
+    value = env.get(var)
     if value and os.path.isabs(value):
         return Path(value)
     return Path.home() / default
@@ -150,9 +150,9 @@ def load_settings(environ: dict[str, str] | None = None) -> Settings:
     runtime_base = env.get("XDG_RUNTIME_DIR")
     runtime_dir = Path(runtime_base) / APP if runtime_base and os.path.isabs(runtime_base) else None
     settings = Settings(
-        data_dir=_xdg("XDG_DATA_HOME", ".local/share") / APP,
-        state_dir=_xdg("XDG_STATE_HOME", ".local/state") / APP,
-        cache_dir=_xdg("XDG_CACHE_HOME", ".cache") / APP,
+        data_dir=_xdg(env, "XDG_DATA_HOME", ".local/share") / APP,
+        state_dir=_xdg(env, "XDG_STATE_HOME", ".local/state") / APP,
+        cache_dir=_xdg(env, "XDG_CACHE_HOME", ".cache") / APP,
         runtime_dir=runtime_dir,
     )
     if env.get("AWS_LAB_TEST_MODE") == "1":

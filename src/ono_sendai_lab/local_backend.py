@@ -88,55 +88,60 @@ class LocalBackend(Backend):
         return cmd
 
     # -- start -----------------------------------------------------------
-    def start(self, spec: GenerationSpec, logs_dir) -> dict:
-        lock = load_lock(self.settings.lock_path)
+    def prepare(self, spec: GenerationSpec) -> dict:
+        """Deterministic runtime skeleton, persisted by the lifecycle *before*
+        anything is launched, so an interrupted start can always be found and
+        stopped by name."""
         assert self.settings.runtime_dir is not None
-        ensure_private_dir(self.settings.runtime_dir)
-        ensure_private_dir(self.settings.runtime_dir / spec.sandbox_id)
-        ctl = ensure_private_dir(self._ctl_dir(spec.sandbox_id, spec.generation_id))
-        logs_dir = ensure_private_dir(Path(logs_dir))
-        unit = isolation.unit_name(spec.sandbox_id, spec.generation_id)
-        tools = isolation.tool_paths(self.settings)
-        inner = isolation.bwrap_argv(
-            tools["bwrap"],
-            emulator_dir=emulator_dir(self.settings, lock),
-            venv_dir=self.settings.runtime_venv,
-            src_dir=self.settings.src_dir,
-            ctl_dir=ctl,
-            logs_dir=logs_dir,
-            command=self._supervisor_command(spec),
-        )
-        runtime_max = max(1, int(spec.max_deadline - time.time()))
-        argv = isolation.systemd_run_argv(
-            self.settings,
-            unit,
-            f"{isolation.DESCRIPTION_MARK} {spec.sandbox_id} generation {spec.generation_id}",
-            runtime_max_sec=runtime_max,
-            stderr_path=logs_dir / "supervisor.stderr",
-            command=inner,
-        )
-        runtime = {
+        return {
             "backend": "local",
-            "unit": unit,
-            "ctl_dir": str(ctl),
+            "unit": isolation.unit_name(spec.sandbox_id, spec.generation_id),
+            "description": _description(spec.sandbox_id, spec.generation_id),
+            "ctl_dir": str(self._ctl_dir(spec.sandbox_id, spec.generation_id)),
             "boot_id": boot_id(),
             "invocation_id": None,
             "control_group": None,
             "generation_id": spec.generation_id,
         }
+
+    def start(self, spec: GenerationSpec, runtime: dict, logs_dir) -> dict:
+        lock = load_lock(self.settings.lock_path)
         try:
-            proc = subprocess.run(argv, capture_output=True, text=True, timeout=30, stdin=subprocess.DEVNULL)
-        except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
-            raise LabError(
-                "resource_control_unavailable", "could not create the transient systemd unit", {"reason": type(exc).__name__}
-            ) from exc
-        if proc.returncode != 0:
-            self._stop_if_present(unit, None)
-            raise LabError("resource_control_unavailable", "systemd refused the transient unit", {"stderr": proc.stderr.strip()[-300:]})
-        props = isolation.show_unit(self.settings, unit)
-        runtime["invocation_id"] = props.get("InvocationID") or None
-        runtime["control_group"] = props.get("ControlGroup") or None
-        try:
+            ensure_private_dir(self.settings.runtime_dir)
+            ensure_private_dir(self.settings.runtime_dir / spec.sandbox_id)
+            ctl = ensure_private_dir(Path(runtime["ctl_dir"]))
+            logs_dir = ensure_private_dir(Path(logs_dir))
+            tools = isolation.tool_paths(self.settings)
+            inner = isolation.bwrap_argv(
+                tools["bwrap"],
+                emulator_dir=emulator_dir(self.settings, lock),
+                venv_dir=self.settings.runtime_venv,
+                src_dir=self.settings.src_dir,
+                ctl_dir=ctl,
+                logs_dir=logs_dir,
+                command=self._supervisor_command(spec),
+            )
+            argv = isolation.systemd_run_argv(
+                self.settings,
+                runtime["unit"],
+                runtime["description"],
+                runtime_max_sec=max(1, int(spec.max_deadline - time.time())),
+                stderr_path=logs_dir / "supervisor.stderr",
+                command=inner,
+            )
+            try:
+                proc = subprocess.run(argv, capture_output=True, text=True, timeout=30, stdin=subprocess.DEVNULL)
+            except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
+                raise LabError(
+                    "resource_control_unavailable", "could not create the transient systemd unit", {"reason": type(exc).__name__}
+                ) from exc
+            if proc.returncode != 0:
+                raise LabError("resource_control_unavailable", "systemd refused the transient unit", {"stderr": proc.stderr.strip()[-300:]})
+            props = isolation.show_unit(self.settings, runtime["unit"])
+            if props.get("Description") != runtime["description"]:
+                raise LabError("lifecycle_failure", "transient unit identity does not match the generation")
+            runtime["invocation_id"] = props.get("InvocationID") or None
+            runtime["control_group"] = props.get("ControlGroup") or None
             if not runtime["invocation_id"] or not runtime["control_group"]:
                 raise LabError("lifecycle_failure", "transient unit has no invocation identity")
             limits = isolation.read_cgroup_limits(self.settings, runtime["control_group"])
@@ -225,12 +230,20 @@ class LocalBackend(Backend):
             return RuntimeObservation(False, "STOPPED", reason, details)
         return RuntimeObservation(False, "FAILED", reason or "runtime-lost", details)
 
-    def _stop_if_present(self, unit: str, invocation_id: str | None) -> dict:
+    def _stop_if_present(self, runtime: dict) -> dict:
+        unit = runtime["unit"]
         props = isolation.show_unit(self.settings, unit)
         if props.get("LoadState") == "not-found":
             return {"stopped": False, "present": False}
-        if invocation_id is not None and props.get("InvocationID") not in (invocation_id, ""):
-            raise LabError("lifecycle_failure", "unit identity does not match the recorded generation; refusing to stop it")
+        # Ownership evidence: the InvocationID recorded at start, or -- for a
+        # start interrupted before it was recorded -- the generation-specific
+        # description. A PID is never used.
+        invocation_id = runtime.get("invocation_id")
+        if invocation_id is not None:
+            if props.get("InvocationID") not in (invocation_id, ""):
+                raise LabError("lifecycle_failure", "unit identity does not match the recorded generation; refusing to stop it")
+        elif props.get("Description") != runtime.get("description", _description_from(runtime)):
+            raise LabError("lifecycle_failure", "unit description does not match the generation; refusing to stop it")
         isolation.stop_unit(self.settings, unit)
         return {"stopped": True, "present": True}
 
@@ -238,7 +251,7 @@ class LocalBackend(Backend):
         if runtime.get("boot_id") and runtime.get("boot_id") != boot_id():
             self.cleanup(runtime)
             return {"stopped": False, "reason": "previous boot; runtime already gone"}
-        result = self._stop_if_present(runtime["unit"], runtime.get("invocation_id"))
+        result = self._stop_if_present(runtime)
         deadline = time.monotonic() + 30
         while time.monotonic() < deadline:
             props = isolation.show_unit(self.settings, runtime["unit"])
@@ -289,6 +302,17 @@ class LocalBackend(Backend):
         }
 
 
+def _description(sandbox_id: str, generation_id: str) -> str:
+    return f"{isolation.DESCRIPTION_MARK} {sandbox_id} generation {generation_id}"
+
+
+def _description_from(runtime: dict) -> str | None:
+    ctl = Path(runtime.get("ctl_dir", ""))
+    if not ctl.name or not ctl.parent.name:
+        return None
+    return _description(ctl.parent.name, ctl.name)
+
+
 def _read_json(path: Path):
     try:
         return read_json_nofollow(path)
@@ -300,8 +324,13 @@ def _short(report: dict) -> dict:
     return {k: report.get(k) for k in ("ok", "reason", "problems", "remedy", "stderr") if k in report}
 
 
-def orphan_units(settings, known_units: set[str]) -> list[str]:
-    """Lab-pattern units with the lab description marker that no record owns."""
+def foreign_units(settings, known_units: set[str]) -> list[str]:
+    """Active lab-pattern units that no record of *this* registry owns.
+
+    They may belong to another state directory (e.g. an acceptance run) or be
+    left over from a lost registry. They are never stopped automatically: they
+    occupy the single slot and are reported with a remedy.
+    """
     orphans = []
     for unit in isolation.list_lab_units(settings):
         name = unit.get("unit", "")

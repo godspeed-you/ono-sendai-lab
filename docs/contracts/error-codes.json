@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "exit_classes": {
+    "0": "success",
+    "2": "usage/validation",
+    "3": "not found/conflict/stale generation",
+    "4": "preflight/security/resource refusal",
+    "5": "upstream/transport/timeout/operation failure",
+    "6": "lifecycle/cleanup/internal failure"
+  },
+  "codes": {
+    "usage_error": {
+      "exit_code": 2,
+      "retryable": false
+    },
+    "invalid_name": {
+      "exit_code": 2,
+      "retryable": false
+    },
+    "invalid_argument": {
+      "exit_code": 2,
+      "retryable": false
+    },
+    "operation_not_allowed": {
+      "exit_code": 2,
+      "retryable": false
+    },
+    "unknown_scenario": {
+      "exit_code": 2,
+      "retryable": false
+    },
+    "not_found": {
+      "exit_code": 3,
+      "retryable": false
+    },
+    "name_conflict": {
+      "exit_code": 3,
+      "retryable": false
+    },
+    "stale_generation": {
+      "exit_code": 3,
+      "retryable": false
+    },
+    "not_ready": {
+      "exit_code": 3,
+      "retryable": false
+    },
+    "lease_expired": {
+      "exit_code": 3,
+      "retryable": false
+    },
+    "fixture_state_conflict": {
+      "exit_code": 3,
+      "retryable": false
+    },
+    "lock_timeout": {
+      "exit_code": 3,
+      "retryable": true
+    },
+    "preflight_failed": {
+      "exit_code": 4,
+      "retryable": false
+    },
+    "isolation_unavailable": {
+      "exit_code": 4,
+      "retryable": false
+    },
+    "resource_control_unavailable": {
+      "exit_code": 4,
+      "retryable": false
+    },
+    "unsupported_backend": {
+      "exit_code": 4,
+      "retryable": false
+    },
+    "slot_busy": {
+      "exit_code": 4,
+      "retryable": true
+    },
+    "disk_budget_exceeded": {
+      "exit_code": 4,
+      "retryable": false
+    },
+    "lease_cap_exceeded": {
+      "exit_code": 4,
+      "retryable": false
+    },
+    "install_invalid": {
+      "exit_code": 4,
+      "retryable": false
+    },
+    "unsafe_configuration": {
+      "exit_code": 4,
+      "retryable": false
+    },
+    "upstream_error": {
+      "exit_code": 5,
+      "retryable": false
+    },
+    "aws_error": {
+      "exit_code": 5,
+      "retryable": false
+    },
+    "transport_error": {
+      "exit_code": 5,
+      "retryable": true
+    },
+    "timeout": {
+      "exit_code": 5,
+      "retryable": true
+    },
+    "startup_failed": {
+      "exit_code": 5,
+      "retryable": false
+    },
+    "seed_failed": {
+      "exit_code": 5,
+      "retryable": false
+    },
+    "verification_failed": {
+      "exit_code": 5,
+      "retryable": false
+    },
+    "lifecycle_failure": {
+      "exit_code": 6,
+      "retryable": false
+    },
+    "cleanup_failed": {
+      "exit_code": 6,
+      "retryable": false
+    },
+    "internal_error": {
+      "exit_code": 6,
+      "retryable": false
+    }
+  }
+}

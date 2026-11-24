@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "syntax": "aws-lab aws NAME -- SERVICE OPERATION [--flag VALUE...]; list flags take several space-separated values; --flag=VALUE is also accepted",
+  "public": [
+    {
+      "service": "ec2",
+      "operation": "describe-security-groups",
+      "api": "DescribeSecurityGroups",
+      "mutating": false,
+      "parameters": [
+        {
+          "flag": "--group-ids",
+          "api_name": "GroupIds",
+          "kind": "group_id",
+          "required": false,
+          "many": true
+        },
+        {
+          "flag": "--filters",
+          "api_name": "Filters",
+          "kind": "filters",
+          "required": false,
+          "many": true
+        }
+      ],
+      "filter_names": [
+        "group-id",
+        "group-name",
+        "tag-key",
+        "vpc-id",
+        "tag:KEY"
+      ]
+    },
+    {
+      "service": "ec2",
+      "operation": "describe-subnets",
+      "api": "DescribeSubnets",
+      "mutating": false,
+      "parameters": [
+        {
+          "flag": "--subnet-ids",
+          "api_name": "SubnetIds",
+          "kind": "subnet_id",
+          "required": false,
+          "many": true
+        },
+        {
+          "flag": "--filters",
+          "api_name": "Filters",
+          "kind": "filters",
+          "required": false,
+          "many": true
+        }
+      ],
+      "filter_names": [
+        "availability-zone",
+        "cidr-block",
+        "default-for-az",
+        "state",
+        "subnet-id",
+        "tag-key",
+        "vpc-id",
+        "tag:KEY"
+      ]
+    },
+    {
+      "service": "ec2",
+      "operation": "describe-vpcs",
+      "api": "DescribeVpcs",
+      "mutating": false,
+      "parameters": [
+        {
+          "flag": "--vpc-ids",
+          "api_name": "VpcIds",
+          "kind": "vpc_id",
+          "required": false,
+          "many": true
+        },
+        {
+          "flag": "--filters",
+          "api_name": "Filters",
+          "kind": "filters",
+          "required": false,
+          "many": true
+        }
+      ],
+      "filter_names": [
+        "cidr",
+        "cidr-block",
+        "is-default",
+        "state",
+        "tag-key",
+        "vpc-id",
+        "tag:KEY"
+      ]
+    },
+    {
+      "service": "s3",
+      "operation": "create-bucket",
+      "api": "CreateBucket",
+      "mutating": true,
+      "parameters": [
+        {
+          "flag": "--bucket",
+          "api_name": "Bucket",
+          "kind": "bucket",
+          "required": true,
+          "many": false
+        }
+      ],
+      "filter_names": []
+    },
+    {
+      "service": "s3",
+      "operation": "delete-bucket",
+      "api": "DeleteBucket",
+      "mutating": true,
+      "parameters": [
+        {
+          "flag": "--bucket",
+          "api_name": "Bucket",
+          "kind": "bucket",
+          "required": true,
+          "many": false
+        }
+      ],
+      "filter_names": []
+    },
+    {
+      "service": "s3",
+      "operation": "list-buckets",
+      "api": "ListBuckets",
+      "mutating": false,
+      "parameters": [],
+      "filter_names": []
+    },
+    {
+      "service": "sts",
+      "operation": "get-caller-identity",
+      "api": "GetCallerIdentity",
+      "mutating": false,
+      "parameters": [],
+      "filter_names": []
+    }
+  ],
+  "fixture_internal": [
+    {
+      "service": "ec2",
+      "operation": "create-security-group",
+      "api": "CreateSecurityGroup",
+      "mutating": true
+    },
+    {
+      "service": "ec2",
+      "operation": "create-subnet",
+      "api": "CreateSubnet",
+      "mutating": true
+    },
+    {
+      "service": "ec2",
+      "operation": "create-vpc",
+      "api": "CreateVpc",
+      "mutating": true
+    },
+    {
+      "service": "ec2",
+      "operation": "describe-availability-zones",
+      "api": "DescribeAvailabilityZones",
+      "mutating": false
+    },
+    {
+      "service": "s3",
+      "operation": "get-bucket-location",
+      "api": "GetBucketLocation",
+      "mutating": false
+    },
+    {
+      "service": "s3",
+      "operation": "get-bucket-tagging",
+      "api": "GetBucketTagging",
+      "mutating": false
+    },
+    {
+      "service": "s3",
+      "operation": "head-bucket",
+      "api": "HeadBucket",
+      "mutating": false
+    },
+    {
+      "service": "s3",
+      "operation": "put-bucket-tagging",
+      "api": "PutBucketTagging",
+      "mutating": true
+    }
+  ],
+  "forbidden_options": [
+    "--access-key",
+    "--ca-bundle",
+    "--cli-connect-timeout",
+    "--cli-input-json",
+    "--cli-input-yaml",
+    "--cli-read-timeout",
+    "--color",
+    "--debug",
+    "--endpoint",
+    "--endpoint-url",
+    "--generate-cli-skeleton",
+    "--max-items",
+    "--no-paginate",
+    "--no-sign-request",
+    "--no-verify-ssl",
+    "--outfile",
+    "--output",
+    "--page-size",
+    "--profile",
+    "--proxy",
+    "--query",
+    "--region",
+    "--secret-key",
+    "--session-token",
+    "--starting-token"
+  ],
+  "forbidden_value_prefixes": [
+    "file://",
+    "fileb://",
+    "http://",
+    "https://",
+    "s3://"
+  ],
+  "limits": {
+    "max_list_values": 20,
+    "max_filters": 5,
+    "max_filter_values": 10
+  }
+}
