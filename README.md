@@ -37,7 +37,10 @@ Linux x86_64, Python ≥ 3.12, bubblewrap able to create unprivileged user and n
 - The emulator endpoint lives inside a private namespace; reach it through `aws-lab aws`. Direct Ono or provider end-to-end runs are future work.
 - Emulator fidelity is operation-specific, and the emulator is no IAM or security oracle ([security model](docs/operations/security-model.md)).
 - Single trusted operator per host; no multi-user or remote backend yet ([ADR-0005](docs/adr/0005-backend-boundary-and-future-vm.md)).
-- Licensing of this repository is still open (see [docs/STATE.md](docs/STATE.md)).
+
+## License
+
+Apache License 2.0 — see [LICENSE](LICENSE) and [ADR-0008](docs/adr/0008-license-apache-2.0.md). Ono-Sendai core is MIT-licensed at the time of writing; Apache-2.0 is the project's intended long-term licence (core `docs/strategy/cncf-readiness.md` §3), and this repository starts there, like `ono-sendai-kubernetes`.
 
 ## Project
 

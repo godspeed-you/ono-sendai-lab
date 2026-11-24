@@ -9,5 +9,6 @@
 | [0005](0005-backend-boundary-and-future-vm.md) | Transport-neutral backend contract and VM migration runbook | LAB-003, LAB-020, LAB-021, LAB-083 |
 | [0006](0006-host-platform-and-python.md) | Qualified host: Ubuntu 26.04, Python 3.14; 24.04/3.12 coverage | LAB-010, LAB-032 |
 | [0007](0007-cli-contract-details.md) | CLI details the spec leaves open | LAB-050..052 |
+| [0008](0008-license-apache-2.0.md) | Repository licence: Apache-2.0 | LAB-080 |
 
 ADRs resolve ambiguity below the adopted specification. They never change a requirement.

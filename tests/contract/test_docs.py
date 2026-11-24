@@ -70,7 +70,11 @@ def test_A18_documentation_is_complete_and_consistent():
     assert f'__version__ = "{version}"' in (ROOT / "src" / "ono_sendai_lab" / "__init__.py").read_text()
     state = (ROOT / "docs" / "STATE.md").read_text()
     assert version in state and "ea257cb2da7da02a7ed6d9c3ac9f192ee3e14ad18a6b31cd512bb18c09862d0d" in state
-    assert re.search(r"licen[cs]e", state, re.I) and "unresolved" in state.lower()
+    # Licence (LAB-080): chosen by the operator, recorded consistently.
+    license_text = (ROOT / "LICENSE").read_text()
+    assert license_text.lstrip().startswith("Apache License") and "Version 2.0, January 2004" in license_text
+    assert 'license = "Apache-2.0"' in (ROOT / "pyproject.toml").read_text()
+    assert "Apache License 2.0" in readme and "Apache-2.0" in state
 
 
 def test_A18_review_record_exists():

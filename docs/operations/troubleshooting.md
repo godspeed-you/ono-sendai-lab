@@ -4,7 +4,7 @@ Start with `aws-lab doctor` (add `--json` for the full report) and `aws-lab logs
 
 ## User namespaces
 
-Symptom: `isolation_unavailable`, `bubblewrap could not create the unprivileged namespaces`, or `bwrap: setting up uid map: Permission denied`.
+Symptom: `isolation_unavailable`, `bubblewrap could not create the unprivileged namespaces`, `bwrap: setting up uid map: Permission denied`, or `bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted` (observed on GitHub's `ubuntu-24.04` image with the distribution's bubblewrap: the user namespace is created, but without the capability to bring up `lo`).
 
 On Ubuntu 23.10 and later `kernel.apparmor_restrict_unprivileged_userns=1` confines unprivileged user namespaces. Ubuntu's `apparmor` package ships `/etc/apparmor.d/bwrap-userns-restrict`, which lets `/usr/bin/bwrap` create them. Check:
 

@@ -3,6 +3,8 @@ name = "ono-sendai-lab"
 version = "0.1.0"
 description = "Disposable, contained AWS Emulator sandboxes for provider development (SPEC-001)."
 readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 requires-python = ">=3.12"
 # Runtime dependency of the in-sandbox managed client only; the host CLI is
 # stdlib-only. Exact pins with hashes live in locks/requirements-runtime.txt.

@@ -62,8 +62,9 @@ Local evidence is never reported as CI evidence.
 | [45438803336](https://github.com/godspeed-you/ono-sendai-lab/actions/runs/45438803336) | `a66372d` | failed: review record missing (A18) | skipped |
 | [45439750008](https://github.com/godspeed-you/ono-sendai-lab/actions/runs/45439750008) | `ddeb52e` | **passed** | **blocked**: runner qualification failed, hosted `ubuntu-24.04` lacks `bubblewrap` (systemd user manager, gpg, dpkg-deb present) |
 | [45440713090](https://github.com/godspeed-you/ono-sendai-lab/actions/runs/45440713090) | `aee03a2` | **passed** | **blocked** (same runner blocker) |
+| [45494341300](https://github.com/godspeed-you/ono-sendai-lab/actions/runs/45494341300) | `b73757d` | **passed** | **blocked**: bubblewrap installed (operator-approved), qualification passed; bootstrap preflight refused (exit 4, `isolation_unavailable`): `bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted` — the AppArmor user-namespace restriction of the 24.04 image; the lab failed closed |
 
-**CI blocker (resolution in progress):** real acceptance in CI needs bubblewrap on the runner. The operator approved installing it on the hosted runner on 2026-11-24 (`sudo apt-get install -y --no-install-recommends bubblewrap`, the workflow's only privileged step). Whether the ubuntu-24.04 runner then provides unprivileged namespaces and cgroup delegation is decided by the next CI run.
+**CI blocker:** bubblewrap is installed on the hosted runner (operator-approved 2026-11-24, the workflow's only privileged step), but on the ubuntu-24.04 image the AppArmor user-namespace restriction keeps bwrap from configuring loopback, so preflight refuses. Next action (operator decision, not taken): on the ephemeral runner either load an AppArmor profile that allows `/usr/bin/bwrap` to use user namespaces (targeted; the equivalent of the `bwrap-userns-restrict` profile on the qualified 26.04 host) or set `kernel.apparmor_restrict_unprivileged_userns=0` (broader), or provide a qualified runner. The same finding applies to Ubuntu 24.04 developer hosts: the administrator must provide such a profile before the lab can run there.
 
 ## Issues (milestone v0.1.0)
 
@@ -81,7 +82,7 @@ Local evidence is never reported as CI evidence.
 
 ## Findings (open)
 
-- **Licensing:** the repository has no licence and the operator has not specified one. Unresolved publication prerequisite; no licence was guessed.
+- **Licensing:** resolved 2026-11-24 — Apache-2.0 (operator pointed to the project's intended long-term licence in core `docs/strategy/cncf-readiness.md` §3; ADR-0008).
 - **Ubuntu 24.04 acceptance:** not yet run on the spec's primary platform (needs a qualified runner).
 - **Upstream doc difference:** wrong keys yield `InvalidClientTokenId` on 1.0.598; the user guide documents `AccessDenied` (recorded in the compatibility manifest).
 - **Process note:** the foundation (e27aa02) was written before its tests; tests, contracts and ADRs followed in the next commits. Every later defect fix came with a regression test.
