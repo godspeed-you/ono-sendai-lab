@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "id": "aws-minimal",
+  "version": "1.0.0",
+  "description": "One synthetic S3 bucket, one tagged VPC 10.42.0.0/16, one subnet 10.42.1.0/24 inside it and one named, tagged security group in that VPC. Demonstrates cross-object discovery through API metadata only; no network or compute workload.",
+  "requires": {
+    "operations": [
+      "sts get-caller-identity",
+      "s3 list-buckets",
+      "s3 create-bucket",
+      "s3 put-bucket-tagging",
+      "s3 head-bucket",
+      "s3 get-bucket-location",
+      "s3 get-bucket-tagging",
+      "ec2 create-vpc",
+      "ec2 create-subnet",
+      "ec2 create-security-group",
+      "ec2 describe-vpcs",
+      "ec2 describe-subnets",
+      "ec2 describe-security-groups"
+    ]
+  },
+  "resources": [
+    {
+      "logical_id": "bucket",
+      "type": "s3-bucket",
+      "name_template": "osl-min-{generation12}",
+      "tags": {"Name": "osl-aws-minimal-bucket"}
+    },
+    {
+      "logical_id": "vpc",
+      "type": "ec2-vpc",
+      "cidr": "10.42.0.0/16",
+      "tags": {"Name": "osl-aws-minimal-vpc"}
+    },
+    {
+      "logical_id": "subnet",
+      "type": "ec2-subnet",
+      "vpc": "vpc",
+      "cidr": "10.42.1.0/24",
+      "tags": {"Name": "osl-aws-minimal-subnet"}
+    },
+    {
+      "logical_id": "security_group",
+      "type": "ec2-security-group",
+      "vpc": "vpc",
+      "group_name": "osl-aws-minimal-sg",
+      "description": "ono-sendai-lab synthetic fixture group",
+      "tags": {"Name": "osl-aws-minimal-sg"}
+    }
+  ],
+  "relations": [
+    {"from": "subnet", "to": "vpc", "kind": "subnet-in-vpc"},
+    {"from": "security_group", "to": "vpc", "kind": "security-group-in-vpc"}
+  ],
+  "verification": [
+    "every logical resource maps to an observed AWS identifier",
+    "exactly the fixture bucket exists beyond the S3 baseline, in us-west-2, with ownership tags",
+    "VPC CIDR, non-default flag and tags as declared",
+    "subnet CIDR and tags as declared; subnet VpcId equals the fixture VPC",
+    "security group name and tags as declared; group VpcId equals the fixture VPC",
+    "exactly one VPC, one subnet and one security group carry this generation's tag, and no other lab-tagged EC2 resource exists"
+  ]
+}

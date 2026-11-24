@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "id": "aws-empty",
+  "version": "1.0.0",
+  "description": "No lab-created resources. Verifies the signed identity and the observed S3/EC2 baseline; default VPCs, subnets and security groups are recorded as baseline and are not fixture-owned.",
+  "requires": {
+    "operations": [
+      "sts get-caller-identity",
+      "s3 list-buckets",
+      "ec2 describe-vpcs",
+      "ec2 describe-subnets",
+      "ec2 describe-security-groups"
+    ]
+  },
+  "resources": [],
+  "relations": [],
+  "verification": [
+    "identity.account equals the observed baseline identity",
+    "no S3 bucket beyond the observed baseline",
+    "no EC2 VPC, subnet or security group carries the ono-sendai-lab:scenario tag key",
+    "the VPC set equals the observed baseline"
+  ]
+}

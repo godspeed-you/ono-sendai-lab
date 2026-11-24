@@ -1,0 +1,44 @@
+[project]
+name = "ono-sendai-lab"
+version = "0.1.0"
+description = "Disposable, contained AWS Emulator sandboxes for provider development (SPEC-001)."
+readme = "README.md"
+requires-python = ">=3.12"
+# Runtime dependency of the in-sandbox managed client only; the host CLI is
+# stdlib-only. Exact pins with hashes live in locks/requirements-runtime.txt.
+dependencies = ["botocore==1.44.10"]
+
+[project.optional-dependencies]
+dev = ["pytest==9.2.0", "ruff==0.17.6", "jsonschema==4.26.0"]
+
+[project.scripts]
+aws-lab = "ono_sendai_lab.cli:main"
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 140
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "BLE", "PL"]
+ignore = [
+  "PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR2004", "PLC0415",
+  "S603", "S607", "S108", "S101", "S104", "S110", "B904", "PLW2901", "PLW1510", "PLR0917",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S", "PLR", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "acceptance: real emulator / OS-control acceptance (run by scripts/acceptance.sh)",
+]
+addopts = "-ra --strict-markers"

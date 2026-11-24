@@ -1,0 +1,14 @@
+# Runtime, install and evidence scratch never belong in Git (LAB-081).
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+/build/
+/dist/
+*.egg-info/
+*.deb
+*.sig
+/.lab-tmp/
+/docs/evidence/raw/

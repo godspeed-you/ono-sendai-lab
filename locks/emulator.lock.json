@@ -1,0 +1,47 @@
+{
+  "lock_version": 1,
+  "product": "aws-emulator",
+  "release_stream": "LTS",
+  "version": "1.0.598",
+  "package_revision": "1",
+  "github_release_tag": "v1.0.598",
+  "upstream_commit": "fc05151cc5015eb457b31a79871539af51fb9fdd",
+  "upstream_release_date": "2026.11.24",
+  "platform": {
+    "os": "linux",
+    "machine": "x86_64",
+    "deb_architecture": "amd64"
+  },
+  "asset": {
+    "url": "https://downloads.aws.com/aws-emulator/packages/aws-emulator/LTS/aws-emulator_1.0.598-1_amd64.deb",
+    "filename": "aws-emulator_1.0.598-1_amd64.deb",
+    "size": 217676176,
+    "sha256": "b18a229dfb6b27acbe227bb907457f270e5417443a4d27a5c86ed9926e562fbb"
+  },
+  "signature": {
+    "url": "https://downloads.aws.com/aws-emulator/packages/aws-emulator/LTS/aws-emulator_1.0.598-1_amd64.deb.sig",
+    "sha256": "58f7806295e7cc057e90abae57e5f932218169db68211cde9a378c5331908560",
+    "publisher_key_file": "locks/aws-publishing-key.asc",
+    "publisher_key_sha256": "33f40fa3b822167ba2139368242a220bf9c8d753044947fa83bb1db1fd04b9ad",
+    "publisher_key_fingerprint": "98BCF336A3BE53B734E967C52E5BF49BD940F624",
+    "publisher_key_uid": "SSM Publishing <ssm-publishing@amazon.com>",
+    "fingerprint_source": "https://docs.aws.amazon.com/emulator/latest/userguide/getting-started-linux.html"
+  },
+  "checksum_provenance": "The package SHA-256 is a locally established pin computed on 2026-11-24 after a GOODSIG/VALIDSIG OpenPGP verification of the detached publisher signature with the key whose fingerprint matches the one documented by AWS. Upstream publishes no separate checksum file; the OpenPGP signature is the upstream authenticity proof and is re-verified on every install.",
+  "executable": {
+    "package_path": "./opt/aws-emulator/bin/aws-emulator",
+    "size": 1209985296,
+    "sha256": "950eeab681c2cd4e9167a8dbe8ad9a74e0d6ad51aad86dfb5660245bbbd1f20f",
+    "version_output": [
+      "Version: 1.0.598",
+      "Release date: 2026.11.24",
+      "Commit: fc05151cc5015eb457b31a79871539af51fb9fdd"
+    ]
+  },
+  "qualified_identity": {
+    "account": "000000000000",
+    "arn": "arn:aws:iam::000000000000:user/emulator"
+  },
+  "acquired": "2026-11-24",
+  "acquisition_channel": "downloads.aws.com via HTTPS (documented in the versioning guide); GitHub release v1.0.598 carries only scores.json.gz"
+}

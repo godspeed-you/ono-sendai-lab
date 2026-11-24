@@ -1,0 +1,5 @@
+#!/bin/sh
+# aws-lab launcher: the host-side control plane is stdlib-only Python run in
+# isolated mode (-I: no PYTHONPATH, no user site, no cwd on sys.path).
+ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+exec /usr/bin/python3 -I -c 'import sys; sys.path.insert(0, sys.argv.pop(1)); from ono_sendai_lab.cli import main; sys.exit(main())' "$ROOT/src" "$@"
