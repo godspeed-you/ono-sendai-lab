@@ -10,7 +10,7 @@ SPEC-001 AWS Emulator Foundation: `docs/specs/ono_sendai_lab_spec_v0.1.0.md`, ad
 
 ## Code state
 
-Last code commit with full local acceptance: `ddeb52e` (code hash `cf3ed984de2f7f48…`, see [acceptance-evidence.json](evidence/acceptance-evidence.json)). Later commits change only documentation and evidence; `scripts/release-check.sh` verifies that the committed evidence matches the current code hash.
+Last code commit with full local acceptance: `ddeb52e`; final release-check on `aee03a2` (docs-only difference) (code hash `cf3ed984de2f7f48…`, see [acceptance-evidence.json](evidence/acceptance-evidence.json)). Later commits change only documentation and evidence; `scripts/release-check.sh` verifies that the committed evidence matches the current code hash.
 
 ## Pinned dependencies
 
@@ -48,7 +48,7 @@ Host CLI peak RSS per call: 52 MiB (`status`, `scenarios`). Durations: create 0.
 | --- | --- | --- |
 | `scripts/gate.sh` | passed locally (203 unit + contract tests, ruff, spec hash, traceability, secret scan) | 6 s |
 | `scripts/acceptance.sh` | passed locally: 41 tests, rows A01–A19 all passed, cleanup verified, 15/15 operations verified | 247 s |
-| `scripts/release-check.sh` | see the final run record below | — |
+| `scripts/release-check.sh` | **passed** on `aee03a2` (clean worktree): printed `release-check: ono-sendai-lab is release-ready`; its own acceptance run passed 41/41 with cleanup verified | 263 s |
 
 Evidence: [acceptance-evidence.json](evidence/acceptance-evidence.json) (local, `not_ci_evidence: true`) · [operation-compatibility.json](contracts/operation-compatibility.json) · [doc-review.md](evidence/doc-review.md) · [traceability.json](contracts/traceability.json).
 
@@ -61,6 +61,7 @@ Local evidence is never reported as CI evidence.
 | [45437926431](https://github.com/godspeed-you/ono-sendai-lab/actions/runs/45437926431) | `63d5843` | failed: `referencing` needs `typing-extensions` on Python 3.12 (fixed, regression test added) | skipped (needs gate) |
 | [45438803336](https://github.com/godspeed-you/ono-sendai-lab/actions/runs/45438803336) | `a66372d` | failed: review record missing (A18) | skipped |
 | [45439750008](https://github.com/godspeed-you/ono-sendai-lab/actions/runs/45439750008) | `ddeb52e` | **passed** | **blocked**: runner qualification failed, hosted `ubuntu-24.04` lacks `bubblewrap` (systemd user manager, gpg, dpkg-deb present) |
+| [45440713090](https://github.com/godspeed-you/ono-sendai-lab/actions/runs/45440713090) | `aee03a2` | **passed** | **blocked** (same runner blocker) |
 
 **CI blocker:** real acceptance in CI needs bubblewrap on the runner. Installing it needs `sudo apt-get install bubblewrap` on the hosted runner or a qualified dedicated runner ([ci-runner.md](operations/ci-runner.md)); both are operator decisions and were not taken. Until then CI acceptance evidence does not exist, and the publication condition is unmet.
 
@@ -76,7 +77,7 @@ Local evidence is never reported as CI evidence.
 | #6 fixtures/compatibility | verified (A05–A08, A17), closed |
 | #7 security | verified (A10, A11, A16; threat model reviewed), closed |
 | #8 docs | verified (A18, independent review), closed |
-| #9 gates/CI | open until release-check passes; CI acceptance blocked as above |
+| #9 gates/CI | local gates and release-check passed; **kept open**: CI acceptance has never run real acceptance (runner blocker) |
 
 ## Findings (open)
 
