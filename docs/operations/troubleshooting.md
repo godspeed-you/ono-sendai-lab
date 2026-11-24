@@ -14,7 +14,7 @@ ls /etc/apparmor.d/ | grep bwrap
 bwrap --unshare-all --unshare-user --ro-bind /usr /usr --symlink usr/bin /bin --symlink usr/lib /lib --symlink usr/lib64 /lib64 -- /usr/bin/true && echo ok
 ```
 
-Remedy (administrator action; the lab never does this): install `bubblewrap` from the distribution and keep the `bwrap-userns-restrict` profile loaded. Disabling the sysctl globally is a weaker host configuration; prefer the profile.
+Remedy (administrator action; the lab never does this): install `bubblewrap` from the distribution and keep the `bwrap-userns-restrict` profile loaded. Where the distribution does not provide a working profile (as observed on GitHub's `ubuntu-24.04` image), an administrator can load an equivalent AppArmor profile for `/usr/bin/bwrap` or set `kernel.apparmor_restrict_unprivileged_userns=0`; the sysctl is the broader change, used only on the ephemeral CI runner by operator decision.
 
 ## systemd user manager
 

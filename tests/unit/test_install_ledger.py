@@ -106,3 +106,19 @@ def test_evidence_must_name_unchanged_code(tmp_path, monkeypatch):
     doc["code_hash_at_end"] = "b" * 64
     path.write_text(json.dumps(doc))
     assert devtools.check_evidence(path) == []
+
+
+def test_evidence_names_its_origin(tmp_path, monkeypatch):
+    """Regression: CI-produced evidence declared itself local (not_ci_evidence: true)."""
+    from ono_sendai_lab import devtools
+
+    (tmp_path / "code_hash_start").write_text("a" * 64)
+    monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
+    local = devtools.build_evidence(tmp_path)
+    assert local["kind"] == "local-acceptance" and local["not_ci_evidence"] is True and local["ci_run"] is None
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    monkeypatch.setenv("GITHUB_REPOSITORY", "godspeed-you/ono-sendai-lab")
+    monkeypatch.setenv("GITHUB_RUN_ID", "123")
+    ci = devtools.build_evidence(tmp_path)
+    assert ci["kind"] == "ci-acceptance" and ci["not_ci_evidence"] is False
+    assert ci["ci_run"] == "https://github.com/godspeed-you/ono-sendai-lab/actions/runs/123"

@@ -241,10 +241,19 @@ def build_evidence(run_dir: Path) -> dict:
     tested_hash = start_file.read_text().strip() if start_file.exists() else None
     dirty = bool(subprocess.run(["git", "-C", str(ROOT), "status", "--porcelain"], capture_output=True, text=True).stdout.strip())
     doctor = load("doctor.json", {})
+    import os
+
+    in_ci = os.environ.get("GITHUB_ACTIONS") == "true"
     return {
         "schema_version": 1,
-        "kind": "local-acceptance",
-        "not_ci_evidence": True,
+        "kind": "ci-acceptance" if in_ci else "local-acceptance",
+        "not_ci_evidence": not in_ci,
+        "ci_run": (
+            f"{os.environ.get('GITHUB_SERVER_URL', 'https://github.com')}/{os.environ.get('GITHUB_REPOSITORY', '')}"
+            f"/actions/runs/{os.environ.get('GITHUB_RUN_ID', '')}"
+            if in_ci
+            else None
+        ),
         "git_head": head,
         "worktree_dirty_at_run": dirty,
         "code_hash": tested_hash,
