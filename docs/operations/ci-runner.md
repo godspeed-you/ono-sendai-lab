@@ -3,7 +3,7 @@
 `.github/workflows/ci.yml` uses the same scripts as local work, pins every action to a commit SHA, runs with `contents: read` and needs no secrets.
 
 - **gate** (any standard `ubuntu-24.04` runner): `scripts/bootstrap.sh --dev-tools-only` (hashed dev toolchain, no emulator) and `scripts/gate.sh`.
-- **acceptance** (separate, visible job): a qualification step checks for bubblewrap, `gpg`, `dpkg-deb`, a reachable systemd user manager and `XDG_RUNTIME_DIR` **without sudo and without changing the runner**. On an unqualified runner the job fails and names the missing pieces; a skipped or missing acceptance run never counts as passed.
+- **acceptance** (separate, visible job): installs the distribution's `bubblewrap` on the ephemeral hosted runner (the only privileged step, approved by the operator on 2026-11-24; no sysctl, AppArmor or network change), then a qualification step checks for bubblewrap, `gpg`, `dpkg-deb`, a reachable systemd user manager and `XDG_RUNTIME_DIR`. `scripts/acceptance.sh` starts with `aws-lab doctor`, which proves namespaces and cgroup limits; on a host that cannot provide them the job fails and names the blocker. A skipped or missing acceptance run never counts as passed.
 
 ## Qualified acceptance runner procedure
 

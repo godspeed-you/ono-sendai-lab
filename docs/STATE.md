@@ -63,7 +63,7 @@ Local evidence is never reported as CI evidence.
 | [45439750008](https://github.com/godspeed-you/ono-sendai-lab/actions/runs/45439750008) | `ddeb52e` | **passed** | **blocked**: runner qualification failed, hosted `ubuntu-24.04` lacks `bubblewrap` (systemd user manager, gpg, dpkg-deb present) |
 | [45440713090](https://github.com/godspeed-you/ono-sendai-lab/actions/runs/45440713090) | `aee03a2` | **passed** | **blocked** (same runner blocker) |
 
-**CI blocker:** real acceptance in CI needs bubblewrap on the runner. Installing it needs `sudo apt-get install bubblewrap` on the hosted runner or a qualified dedicated runner ([ci-runner.md](operations/ci-runner.md)); both are operator decisions and were not taken. Until then CI acceptance evidence does not exist, and the publication condition is unmet.
+**CI blocker (resolution in progress):** real acceptance in CI needs bubblewrap on the runner. The operator approved installing it on the hosted runner on 2026-11-24 (`sudo apt-get install -y --no-install-recommends bubblewrap`, the workflow's only privileged step). Whether the ubuntu-24.04 runner then provides unprivileged namespaces and cgroup delegation is decided by the next CI run.
 
 ## Issues (milestone v0.1.0)
 

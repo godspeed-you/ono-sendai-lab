@@ -38,12 +38,15 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Runner qualification (unprivileged; the runner is not reconfigured)
-        # A hosted runner is qualified only if it already offers bubblewrap,
-        # unprivileged user+network namespaces and a systemd user manager with
-        # delegated cpu/memory/pids controllers. If not, this step fails and
-        # names the blocker; docs/operations/ci-runner.md describes the
-        # qualified runner procedure.
+      - name: Install bubblewrap (operator-approved 2026-11-24, ephemeral hosted runner only)
+        # The only privileged step: the distribution package, nothing else.
+        # No sysctl, AppArmor, network or service change is made.
+        run: sudo apt-get install -y --no-install-recommends bubblewrap
+      - name: Runner qualification
+        # The runner is qualified only if bubblewrap, a systemd user manager
+        # and XDG_RUNTIME_DIR are present; whether bubblewrap may create the
+        # unprivileged namespaces and whether cgroup limits are enforced is
+        # then proven by `aws-lab doctor` inside scripts/acceptance.sh.
         run: |
           set -u
           missing=""
