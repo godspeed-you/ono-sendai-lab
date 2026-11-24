@@ -1,0 +1,70 @@
+# CI for ono-sendai-lab (LAB-092). Same scripts as local; pinned actions;
+# least privilege; no AWS secrets; nothing here ever contacts AWS APIs.
+name: ci
+
+on:
+  push:
+    branches: [implementation, main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: gate (static, unit, contract)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install the hashed gate toolchain (no emulator)
+        run: scripts/bootstrap.sh --dev-tools-only
+      - name: Gate
+        run: scripts/gate.sh
+
+  acceptance:
+    name: acceptance (real emulator, namespaces, cgroups)
+    needs: gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Runner qualification (unprivileged; the runner is not reconfigured)
+        # A hosted runner is qualified only if it already offers bubblewrap,
+        # unprivileged user+network namespaces and a systemd user manager with
+        # delegated cpu/memory/pids controllers. If not, this step fails and
+        # names the blocker; docs/operations/ci-runner.md describes the
+        # qualified runner procedure.
+        run: |
+          set -u
+          missing=""
+          command -v bwrap >/dev/null || missing="$missing bubblewrap"
+          command -v gpg >/dev/null || missing="$missing gpg"
+          command -v dpkg-deb >/dev/null || missing="$missing dpkg-deb"
+          systemctl --user show-environment >/dev/null 2>&1 || missing="$missing systemd-user-manager"
+          [ -n "${XDG_RUNTIME_DIR:-}" ] || missing="$missing XDG_RUNTIME_DIR"
+          if [ -n "$missing" ]; then
+            echo "::error title=acceptance runner not qualified::missing:$missing (see docs/operations/ci-runner.md)"
+            exit 1
+          fi
+      - name: Bootstrap (pinned, signature-verified emulator; hashed venvs)
+        run: scripts/bootstrap.sh --dev
+      - name: Acceptance
+        run: scripts/acceptance.sh
+      - name: Upload redacted evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: acceptance-evidence
+          path: docs/evidence/raw/
+          if-no-files-found: ignore
+          retention-days: 14

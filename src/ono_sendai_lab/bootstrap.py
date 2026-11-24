@@ -334,6 +334,18 @@ def install(settings, lock_path: Path, *, dev: bool, offline: bool, dry_run: boo
     return result
 
 
+def install_dev_tools(settings) -> dict:
+    """Only the hashed development toolchain, for static gates on standard CI
+    runners. No emulator, no namespaces, no receipt: the lab stays unusable."""
+    if sys.version_info < (3, 12):  # noqa: UP036 - bootstrap may run on an older system python
+        raise LabError("preflight_failed", "Python 3.12 or newer is required", {"python": sys.version.split()[0]})
+    ensure_private_dir(settings.data_dir)
+    ensure_private_dir(settings.state_dir)
+    ledger.init_ledger(settings, [])
+    admission = ledger.admit(settings, 0 if _venv_current(settings.dev_venv, settings, "dev") else VENV_DEV_ESTIMATE, "dev bootstrap")
+    return {"dev_venv": _ensure_venv(settings, settings.dev_venv, "dev"), "admission": admission, "emulator_installed": False}
+
+
 def uninstall(settings) -> dict:
     active = []
     try:
@@ -363,6 +375,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--offline", action="store_true", help="use only cached downloads")
     parser.add_argument("--lock", default=None, help="alternative lock file (tests)")
     parser.add_argument("--uninstall", action="store_true", help="remove every lab-owned location")
+    parser.add_argument("--dev-tools-only", action="store_true", help="only the hashed gate toolchain (standard CI runners)")
     parser.add_argument("--track", action="append", default=[], help="extra absolute path to count in the disk ledger")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
@@ -370,6 +383,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.uninstall:
             result = uninstall(settings)
+        elif args.dev_tools_only:
+            result = install_dev_tools(settings)
         else:
             lock_path = Path(args.lock).resolve() if args.lock else settings.lock_path
             result = install(settings, lock_path, dev=args.dev, offline=args.offline, dry_run=args.plan, extra_tracked=args.track)
@@ -394,6 +409,8 @@ def main(argv: list[str] | None = None) -> int:
             print("bootstrap plan (no changes made):")
             for step in res["plan"]:
                 print(f"  - {step['step']}" + ("" if step.get("needed", True) else " (already satisfied)"))
+        elif "emulator_installed" in res:
+            print("installed the hashed development toolchain only (no emulator)")
         elif "removed_locations" in res:
             print(f"uninstalled: removed {', '.join(res['removed_locations']) or 'nothing'}")
         else:

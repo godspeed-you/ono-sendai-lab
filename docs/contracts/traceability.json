@@ -1,0 +1,544 @@
+{
+  "schema_version": 1,
+  "spec": "docs/specs/ono_sendai_lab_spec_v0.1.0.md",
+  "spec_sha256": "ea257cb2da7da02a7ed6d9c3ac9f192ee3e14ad18a6b31cd512bb18c09862d0d",
+  "requirements": {
+    "LAB-001": {
+      "tests": [
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_plan_changes_nothing",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_repeat_install_is_idempotent_and_reverifies",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_corrupt_digest_rejected_without_change",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_wrong_architecture_rejected",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_fresh_install_doctor_and_uninstall_cycle",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A03_prebuilt_emulator_starts_verified",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A06_aws_minimal_topology_independently_verified",
+        "tests/contract/test_docs.py::test_A18_documentation_is_complete_and_consistent"
+      ],
+      "issue": 8
+    },
+    "LAB-002": {
+      "tests": [
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A03_prebuilt_emulator_starts_verified",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A06_aws_minimal_topology_independently_verified",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A09_reset_rotates_and_invalidates",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A15_destroy_is_idempotent_and_complete"
+      ],
+      "issue": 3
+    },
+    "LAB-003": {
+      "tests": [
+        "tests/contract/test_contracts.py::test_backend_contract_matches_code",
+        "tests/unit/test_lifecycle_unit.py::test_unsupported_backend_has_no_side_effects"
+      ],
+      "issue": 8
+    },
+    "LAB-004": {
+      "tests": [
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A03_prebuilt_emulator_starts_verified",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A10_negative_paths_fail_without_fallback",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A12_unexpected_death_detected_and_unrelated_process_untouched",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A12_startup_failure_recognized_and_cleaned",
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A17_measurements_and_operation_coverage"
+      ],
+      "issue": 9
+    },
+    "LAB-010": {
+      "tests": [
+        "tests/unit/test_install_ledger.py::test_platform_mismatch_rejected",
+        "tests/contract/test_contracts.py::test_dependency_lock_follows_schema_and_pins_agree",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_plan_changes_nothing",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_repeat_install_is_idempotent_and_reverifies",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_corrupt_digest_rejected_without_change",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_wrong_architecture_rejected",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_fresh_install_doctor_and_uninstall_cycle"
+      ],
+      "issue": 1
+    },
+    "LAB-011": {
+      "tests": [
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_plan_changes_nothing",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_repeat_install_is_idempotent_and_reverifies",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_corrupt_digest_rejected_without_change",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_wrong_architecture_rejected",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_fresh_install_doctor_and_uninstall_cycle"
+      ],
+      "issue": 1
+    },
+    "LAB-012": {
+      "tests": [
+        "tests/unit/test_install_ledger.py::test_lock_validation_rejects",
+        "tests/unit/test_install_ledger.py::test_real_lock_is_valid",
+        "tests/contract/test_contracts.py::test_dependency_lock_follows_schema_and_pins_agree",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_plan_changes_nothing",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_repeat_install_is_idempotent_and_reverifies",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_corrupt_digest_rejected_without_change",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_wrong_architecture_rejected",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_fresh_install_doctor_and_uninstall_cycle"
+      ],
+      "issue": 1
+    },
+    "LAB-013": {
+      "tests": [
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_doctor_detects_missing_support",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_unsafe_preflight_refuses_create_without_side_effects",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_doctor_is_safe_on_the_qualified_host",
+        "tests/contract/test_ci_workflow.py::test_A19_workflow_uses_the_gates_with_least_privilege"
+      ],
+      "issue": 2
+    },
+    "LAB-020": {
+      "tests": [
+        "tests/contract/test_contracts.py::test_backend_contract_matches_code",
+        "tests/unit/test_operations.py::test_internal_operations_only_with_flag"
+      ],
+      "issue": 8
+    },
+    "LAB-021": {
+      "tests": [
+        "tests/unit/test_lifecycle_unit.py::test_unsupported_backend_has_no_side_effects",
+        "tests/unit/test_cli_unit.py::test_errors_are_single_json_documents",
+        "tests/contract/test_contracts.py::test_backend_contract_matches_code"
+      ],
+      "issue": 8
+    },
+    "LAB-022": {
+      "tests": [
+        "tests/unit/test_registry_and_names.py::test_records_are_private_and_atomic",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A11_namespace_cannot_reach_host_listeners",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A11_ambient_poisoning_and_filesystem_sentinels"
+      ],
+      "issue": 7
+    },
+    "LAB-023": {
+      "tests": [
+        "tests/unit/test_isolation_argv.py::test_bwrap_flags_enforce_isolation",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_doctor_detects_missing_support",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_unsafe_preflight_refuses_create_without_side_effects",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_doctor_is_safe_on_the_qualified_host",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A11_namespace_cannot_reach_host_listeners",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A11_ambient_poisoning_and_filesystem_sentinels"
+      ],
+      "issue": 2
+    },
+    "LAB-024": {
+      "tests": [
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A03_prebuilt_emulator_starts_verified",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A10_negative_paths_fail_without_fallback"
+      ],
+      "issue": 5
+    },
+    "LAB-025": {
+      "tests": [
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A10_negative_paths_fail_without_fallback",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A11_namespace_cannot_reach_host_listeners",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A11_ambient_poisoning_and_filesystem_sentinels"
+      ],
+      "issue": 5
+    },
+    "LAB-026": {
+      "tests": [
+        "tests/unit/test_worker_channel.py::test_stale_generation_is_rejected",
+        "tests/unit/test_worker_channel.py::test_unknown_and_private_ops_rejected",
+        "tests/unit/test_worker_channel.py::test_oversized_request_refused",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A03_prebuilt_emulator_starts_verified"
+      ],
+      "issue": 5
+    },
+    "LAB-027": {
+      "tests": [
+        "tests/unit/test_isolation_argv.py::test_only_allowlisted_host_paths_are_mounted",
+        "tests/unit/test_isolation_argv.py::test_environment_is_explicit",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A11_namespace_cannot_reach_host_listeners",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A11_ambient_poisoning_and_filesystem_sentinels"
+      ],
+      "issue": 2
+    },
+    "LAB-030": {
+      "tests": [
+        "tests/unit/test_isolation_argv.py::test_systemd_unit_limits",
+        "tests/unit/test_isolation_argv.py::test_verify_limits",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A04_effective_limits_and_single_slot",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A04_disk_admission_refuses_over_budget",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A04_logs_are_bounded",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_concurrent_creates_yield_one_generation",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_same_name_race",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_interrupted_create_leaves_no_stale_ready",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_interrupted_reset_leaves_one_or_zero_generations",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_port_collision_on_reset"
+      ],
+      "issue": 2
+    },
+    "LAB-031": {
+      "tests": [
+        "tests/unit/test_install_ledger.py::test_ledger_admission_refuses_over_budget",
+        "tests/unit/test_install_ledger.py::test_ledger_counts_lab_locations",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A04_effective_limits_and_single_slot",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A04_disk_admission_refuses_over_budget",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A04_logs_are_bounded",
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A17_measurements_and_operation_coverage"
+      ],
+      "issue": 2
+    },
+    "LAB-032": {
+      "tests": [
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A17_measurements_and_operation_coverage"
+      ],
+      "issue": 2
+    },
+    "LAB-033": {
+      "tests": [
+        "tests/unit/test_lifecycle_unit.py::test_dead_runtime_never_reported_ready",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A12_unexpected_death_detected_and_unrelated_process_untouched",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A12_startup_failure_recognized_and_cleaned"
+      ],
+      "issue": 3
+    },
+    "LAB-034": {
+      "tests": [
+        "tests/unit/test_lifecycle_unit.py::test_extend_cap",
+        "tests/unit/test_lifecycle_unit.py::test_expiry_and_no_revival",
+        "tests/unit/test_worker_channel.py::test_lease_cannot_pass_absolute_lifetime",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A13_lease_expiry_enforced_after_cli_exit",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A13_idle_timeout_not_kept_alive_by_status_polling",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A13_extension_cap_and_absolute_lifetime"
+      ],
+      "issue": 3
+    },
+    "LAB-040": {
+      "tests": [
+        "tests/unit/test_registry_and_names.py::test_valid_names",
+        "tests/unit/test_registry_and_names.py::test_invalid_names",
+        "tests/unit/test_registry_and_names.py::test_records_are_private_and_atomic",
+        "tests/unit/test_registry_and_names.py::test_lock_is_exclusive_and_times_out",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A09_reset_rotates_and_invalidates",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_concurrent_creates_yield_one_generation",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_same_name_race",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_interrupted_create_leaves_no_stale_ready",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_interrupted_reset_leaves_one_or_zero_generations",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_port_collision_on_reset"
+      ],
+      "issue": 3
+    },
+    "LAB-041": {
+      "tests": [
+        "tests/unit/test_registry_and_names.py::test_process_transitions_follow_contract",
+        "tests/unit/test_lifecycle_unit.py::test_interrupted_operation_reconciles_to_failed",
+        "tests/unit/test_lifecycle_unit.py::test_reboot_reconciles_without_signals",
+        "tests/unit/test_lifecycle_unit.py::test_killed_start_is_found_and_stopped_by_prepared_identity",
+        "tests/unit/test_isolation_argv.py::test_stop_without_invocation_requires_matching_description",
+        "tests/contract/test_contracts.py::test_lifecycle_contract_matches_code",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A12_unexpected_death_detected_and_unrelated_process_untouched",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A12_startup_failure_recognized_and_cleaned",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_concurrent_creates_yield_one_generation",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_same_name_race",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_interrupted_create_leaves_no_stale_ready",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_interrupted_reset_leaves_one_or_zero_generations",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_port_collision_on_reset",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A15_destroy_is_idempotent_and_complete"
+      ],
+      "issue": 3
+    },
+    "LAB-042": {
+      "tests": [
+        "tests/unit/test_registry_and_names.py::test_fixture_transitions",
+        "tests/unit/test_lifecycle_unit.py::test_seed_semantics",
+        "tests/unit/test_lifecycle_unit.py::test_user_mutation_marks_dirty_reads_do_not",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A07_direct_operations_observe_fixture_and_mutate",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A08_duplicate_seed_refused_without_mutation",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A08_partial_seed_is_dirty_and_reset_rebuilds",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A09_reset_rotates_and_invalidates"
+      ],
+      "issue": 6
+    },
+    "LAB-043": {
+      "tests": [
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A03_prebuilt_emulator_starts_verified",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A12_unexpected_death_detected_and_unrelated_process_untouched",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A12_startup_failure_recognized_and_cleaned",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_concurrent_creates_yield_one_generation",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_same_name_race",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_interrupted_create_leaves_no_stale_ready",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_interrupted_reset_leaves_one_or_zero_generations",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_port_collision_on_reset"
+      ],
+      "issue": 3
+    },
+    "LAB-050": {
+      "tests": [
+        "tests/unit/test_cli_unit.py::test_version_and_help_without_emulator",
+        "tests/unit/test_cli_unit.py::test_errors_are_single_json_documents",
+        "tests/unit/test_cli_unit.py::test_human_errors_go_to_stderr",
+        "tests/unit/test_operations.py::test_lab_controlled_options_rejected",
+        "tests/unit/test_operations.py::test_rejections",
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A16_all_json_documents_followed_the_contract",
+        "tests/contract/test_contracts.py::test_offline_cli_documents_validate",
+        "tests/unit/test_cli_unit.py::test_errors_are_single_json_documents"
+      ],
+      "issue": 4
+    },
+    "LAB-051": {
+      "tests": [
+        "tests/unit/test_operations.py::test_minimum_public_surface_is_exact",
+        "tests/unit/test_operations.py::test_parse_valid_forms",
+        "tests/contract/test_contracts.py::test_operations_contract_matches_code",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A07_direct_operations_observe_fixture_and_mutate",
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A17_measurements_and_operation_coverage"
+      ],
+      "issue": 5
+    },
+    "LAB-052": {
+      "tests": [
+        "tests/contract/test_contracts.py::test_error_codes_contract_matches_code",
+        "tests/contract/test_contracts.py::test_schemas_are_valid",
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A16_all_json_documents_followed_the_contract",
+        "tests/contract/test_contracts.py::test_offline_cli_documents_validate",
+        "tests/unit/test_cli_unit.py::test_errors_are_single_json_documents"
+      ],
+      "issue": 4
+    },
+    "LAB-060": {
+      "tests": [
+        "tests/unit/test_scenarios_unit.py::test_minimal_seed_and_verify",
+        "tests/unit/test_scenarios_unit.py::test_verify_uses_observed_relations",
+        "tests/contract/test_contracts.py::test_scenario_manifests_follow_schema",
+        "tests/contract/test_contracts.py::test_minimal_manifest_is_the_specified_topology",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A05_aws_empty_observes_baseline_without_creating",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A06_aws_minimal_topology_independently_verified"
+      ],
+      "issue": 6
+    },
+    "LAB-061": {
+      "tests": [
+        "tests/unit/test_scenarios_unit.py::test_partial_seed_reports_progress",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A08_duplicate_seed_refused_without_mutation",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A08_partial_seed_is_dirty_and_reset_rebuilds"
+      ],
+      "issue": 6
+    },
+    "LAB-062": {
+      "tests": [
+        "tests/contract/test_contracts.py::test_compatibility_manifest_is_consistent",
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A17_measurements_and_operation_coverage"
+      ],
+      "issue": 6
+    },
+    "LAB-070": {
+      "tests": [
+        "tests/unit/test_redact.py::test_emulator_key_and_secret_are_redacted",
+        "tests/unit/test_redact.py::test_signature_material_redacted",
+        "tests/unit/test_config_fsutil.py::test_private_dir_refuses_symlink",
+        "tests/unit/test_config_fsutil.py::test_atomic_write_and_nofollow",
+        "tests/unit/test_worker_channel.py::test_emulator_log_lines_are_sanitized",
+        "tests/contract/test_spec_traceability.py::test_repository_secret_scan_is_clean",
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A16_all_json_documents_followed_the_contract",
+        "tests/contract/test_contracts.py::test_offline_cli_documents_validate",
+        "tests/unit/test_cli_unit.py::test_errors_are_single_json_documents"
+      ],
+      "issue": 7
+    },
+    "LAB-071": {
+      "tests": [
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A10_negative_paths_fail_without_fallback",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A11_namespace_cannot_reach_host_listeners",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A11_ambient_poisoning_and_filesystem_sentinels"
+      ],
+      "issue": 7
+    },
+    "LAB-072": {
+      "tests": [
+        "tests/contract/test_docs.py::test_A18_documentation_is_complete_and_consistent"
+      ],
+      "verification": "docs/operations/security-model.md reviewed in docs/evidence/doc-review.md",
+      "issue": 7
+    },
+    "LAB-080": {
+      "tests": [
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A18_documentation_review",
+        "tests/contract/test_docs.py::test_A18_documentation_is_complete_and_consistent",
+        "tests/contract/test_docs.py::test_A18_review_record_exists"
+      ],
+      "issue": 8
+    },
+    "LAB-081": {
+      "tests": [
+        "tests/contract/test_spec_traceability.py::test_adopted_spec_is_byte_identical",
+        "tests/contract/test_spec_traceability.py::test_every_requirement_and_acceptance_row_is_traced",
+        "tests/contract/test_spec_traceability.py::test_repository_secret_scan_is_clean",
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A18_documentation_review",
+        "tests/contract/test_docs.py::test_A18_documentation_is_complete_and_consistent",
+        "tests/contract/test_docs.py::test_A18_review_record_exists"
+      ],
+      "issue": 8
+    },
+    "LAB-082": {
+      "tests": [
+        "tests/contract/test_ci_workflow.py::test_A19_ci_status_reported_separately"
+      ],
+      "verification": "GitHub issues #1-#9 under milestone v0.1.0; dispositions in docs/STATE.md",
+      "issue": 9
+    },
+    "LAB-083": {
+      "tests": [
+        "tests/contract/test_docs.py::test_A18_documentation_is_complete_and_consistent",
+        "tests/contract/test_contracts.py::test_backend_contract_matches_code"
+      ],
+      "verification": "docs/adr/0005-backend-boundary-and-future-vm.md",
+      "issue": 8
+    },
+    "LAB-090": {
+      "tests": [
+        "tests/unit/test_lifecycle_unit.py::test_create_ready_empty",
+        "tests/unit/test_config_fsutil.py::test_settings_honour_the_given_environment"
+      ],
+      "verification": "unit fakes only at the botocore client, backend and systemd boundaries",
+      "issue": 9
+    },
+    "LAB-091": {
+      "tests": [
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A17_measurements_and_operation_coverage",
+        "tests/contract/test_spec_traceability.py::test_every_requirement_and_acceptance_row_is_traced"
+      ],
+      "verification": "scripts/gate.sh, scripts/acceptance.sh, scripts/release-check.sh",
+      "issue": 9
+    },
+    "LAB-092": {
+      "tests": [
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A19_ci_configuration",
+        "tests/contract/test_ci_workflow.py::test_A19_workflow_uses_the_gates_with_least_privilege",
+        "tests/contract/test_ci_workflow.py::test_A19_ci_status_reported_separately"
+      ],
+      "issue": 9
+    },
+    "LAB-100": {
+      "tests": [
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A15_destroy_is_idempotent_and_complete",
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A17_measurements_and_operation_coverage",
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A19_ci_configuration",
+        "tests/contract/test_ci_workflow.py::test_A19_workflow_uses_the_gates_with_least_privilege",
+        "tests/contract/test_ci_workflow.py::test_A19_ci_status_reported_separately"
+      ],
+      "verification": "scripts/release-check.sh marker plus docs/STATE.md final record",
+      "issue": 9
+    }
+  },
+  "acceptance": {
+    "A01": {
+      "tests": [
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_plan_changes_nothing",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_repeat_install_is_idempotent_and_reverifies",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_corrupt_digest_rejected_without_change",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_wrong_architecture_rejected",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_fresh_install_doctor_and_uninstall_cycle"
+      ]
+    },
+    "A02": {
+      "tests": [
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_doctor_detects_missing_support",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_unsafe_preflight_refuses_create_without_side_effects",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_doctor_is_safe_on_the_qualified_host"
+      ]
+    },
+    "A03": {
+      "tests": [
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A03_prebuilt_emulator_starts_verified"
+      ]
+    },
+    "A04": {
+      "tests": [
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A04_effective_limits_and_single_slot",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A04_disk_admission_refuses_over_budget",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A04_logs_are_bounded"
+      ]
+    },
+    "A05": {
+      "tests": [
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A05_aws_empty_observes_baseline_without_creating"
+      ]
+    },
+    "A06": {
+      "tests": [
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A06_aws_minimal_topology_independently_verified"
+      ]
+    },
+    "A07": {
+      "tests": [
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A07_direct_operations_observe_fixture_and_mutate"
+      ]
+    },
+    "A08": {
+      "tests": [
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A08_duplicate_seed_refused_without_mutation",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A08_partial_seed_is_dirty_and_reset_rebuilds"
+      ]
+    },
+    "A09": {
+      "tests": [
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A09_reset_rotates_and_invalidates"
+      ]
+    },
+    "A10": {
+      "tests": [
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A10_negative_paths_fail_without_fallback"
+      ]
+    },
+    "A11": {
+      "tests": [
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A11_namespace_cannot_reach_host_listeners",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A11_ambient_poisoning_and_filesystem_sentinels"
+      ]
+    },
+    "A12": {
+      "tests": [
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A12_unexpected_death_detected_and_unrelated_process_untouched",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A12_startup_failure_recognized_and_cleaned"
+      ]
+    },
+    "A13": {
+      "tests": [
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A13_lease_expiry_enforced_after_cli_exit",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A13_idle_timeout_not_kept_alive_by_status_polling",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A13_extension_cap_and_absolute_lifetime"
+      ]
+    },
+    "A14": {
+      "tests": [
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_concurrent_creates_yield_one_generation",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_same_name_race",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_interrupted_create_leaves_no_stale_ready",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_interrupted_reset_leaves_one_or_zero_generations",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_port_collision_on_reset"
+      ]
+    },
+    "A15": {
+      "tests": [
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A15_destroy_is_idempotent_and_complete"
+      ]
+    },
+    "A16": {
+      "tests": [
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A16_all_json_documents_followed_the_contract",
+        "tests/contract/test_contracts.py::test_offline_cli_documents_validate",
+        "tests/unit/test_cli_unit.py::test_errors_are_single_json_documents"
+      ]
+    },
+    "A17": {
+      "tests": [
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A17_measurements_and_operation_coverage"
+      ]
+    },
+    "A18": {
+      "tests": [
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A18_documentation_review",
+        "tests/contract/test_docs.py::test_A18_documentation_is_complete_and_consistent",
+        "tests/contract/test_docs.py::test_A18_review_record_exists"
+      ]
+    },
+    "A19": {
+      "tests": [
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A19_ci_configuration",
+        "tests/contract/test_ci_workflow.py::test_A19_workflow_uses_the_gates_with_least_privilege",
+        "tests/contract/test_ci_workflow.py::test_A19_ci_status_reported_separately"
+      ]
+    }
+  }
+}
