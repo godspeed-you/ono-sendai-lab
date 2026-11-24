@@ -1,0 +1,327 @@
+{
+  "acceptance_rows": {
+    "A01": {
+      "durations": {
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_corrupt_digest_rejected_without_change": 0.31,
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_fresh_install_doctor_and_uninstall_cycle": 10.27,
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_plan_changes_nothing": 0.36,
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_repeat_install_is_idempotent_and_reverifies": 1.4,
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_wrong_architecture_rejected": 0.06
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_corrupt_digest_rejected_without_change": "passed",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_fresh_install_doctor_and_uninstall_cycle": "passed",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_plan_changes_nothing": "passed",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_repeat_install_is_idempotent_and_reverifies": "passed",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A01_wrong_architecture_rejected": "passed"
+      }
+    },
+    "A02": {
+      "durations": {
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_doctor_detects_missing_support[missing0-isolation_unavailable]": 0.78,
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_doctor_detects_missing_support[missing1-resource_control_unavailable]": 0.78,
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_doctor_detects_missing_support[missing2-resource_control_unavailable]": 0.83,
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_doctor_is_safe_on_the_qualified_host": 0.81,
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_unsafe_preflight_refuses_create_without_side_effects[missing0]": 0.17,
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_unsafe_preflight_refuses_create_without_side_effects[missing1]": 0.1,
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_unsafe_preflight_refuses_create_without_side_effects[missing2]": 0.23
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_doctor_detects_missing_support[missing0-isolation_unavailable]": "passed",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_doctor_detects_missing_support[missing1-resource_control_unavailable]": "passed",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_doctor_detects_missing_support[missing2-resource_control_unavailable]": "passed",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_doctor_is_safe_on_the_qualified_host": "passed",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_unsafe_preflight_refuses_create_without_side_effects[missing0]": "passed",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_unsafe_preflight_refuses_create_without_side_effects[missing1]": "passed",
+        "tests/acceptance/test_a01_a02_install_preflight.py::test_A02_unsafe_preflight_refuses_create_without_side_effects[missing2]": "passed"
+      }
+    },
+    "A03": {
+      "durations": {
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A03_prebuilt_emulator_starts_verified": 1.52
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A03_prebuilt_emulator_starts_verified": "passed"
+      }
+    },
+    "A04": {
+      "durations": {
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A04_disk_admission_refuses_over_budget": 0.17,
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A04_effective_limits_and_single_slot": 1.03,
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A04_logs_are_bounded": 2.71
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A04_disk_admission_refuses_over_budget": "passed",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A04_effective_limits_and_single_slot": "passed",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A04_logs_are_bounded": "passed"
+      }
+    },
+    "A05": {
+      "durations": {
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A05_aws_empty_observes_baseline_without_creating": 1.31
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A05_aws_empty_observes_baseline_without_creating": "passed"
+      }
+    },
+    "A06": {
+      "durations": {
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A06_aws_minimal_topology_independently_verified": 1.34
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A06_aws_minimal_topology_independently_verified": "passed"
+      }
+    },
+    "A07": {
+      "durations": {
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A07_direct_operations_observe_fixture_and_mutate": 1.54
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A07_direct_operations_observe_fixture_and_mutate": "passed"
+      }
+    },
+    "A08": {
+      "durations": {
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A08_duplicate_seed_refused_without_mutation": 1.39,
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A08_partial_seed_is_dirty_and_reset_rebuilds": 1.87
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A08_duplicate_seed_refused_without_mutation": "passed",
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A08_partial_seed_is_dirty_and_reset_rebuilds": "passed"
+      }
+    },
+    "A09": {
+      "durations": {
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A09_reset_rotates_and_invalidates": 2.23
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a03_a09_lifecycle_fixtures.py::test_A09_reset_rotates_and_invalidates": "passed"
+      }
+    },
+    "A10": {
+      "durations": {
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A10_negative_paths_fail_without_fallback": 1.71
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A10_negative_paths_fail_without_fallback": "passed"
+      }
+    },
+    "A11": {
+      "durations": {
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A11_ambient_poisoning_and_filesystem_sentinels": 1.11,
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A11_namespace_cannot_reach_host_listeners": 1.1
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A11_ambient_poisoning_and_filesystem_sentinels": "passed",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A11_namespace_cannot_reach_host_listeners": "passed"
+      }
+    },
+    "A12": {
+      "durations": {
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A12_startup_failure_recognized_and_cleaned": 0.97,
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A12_unexpected_death_detected_and_unrelated_process_untouched": 1.32
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A12_startup_failure_recognized_and_cleaned": "passed",
+        "tests/acceptance/test_a10_a12_negative_isolation.py::test_A12_unexpected_death_detected_and_unrelated_process_untouched": "passed"
+      }
+    },
+    "A13": {
+      "durations": {
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A13_extension_cap_and_absolute_lifetime": 122.5,
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A13_idle_timeout_not_kept_alive_by_status_polling": 17.47,
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A13_lease_expiry_enforced_after_cli_exit": 30.81
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A13_extension_cap_and_absolute_lifetime": "passed",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A13_idle_timeout_not_kept_alive_by_status_polling": "passed",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A13_lease_expiry_enforced_after_cli_exit": "passed"
+      }
+    },
+    "A14": {
+      "durations": {
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_concurrent_creates_yield_one_generation": 1.26,
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_interrupted_create_leaves_no_stale_ready[2]": 1.4,
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_interrupted_create_leaves_no_stale_ready[9]": 1.32,
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_interrupted_reset_leaves_one_or_zero_generations": 1.26,
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_port_collision_on_reset": 1.64,
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_same_name_race": 0.97
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_concurrent_creates_yield_one_generation": "passed",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_interrupted_create_leaves_no_stale_ready[2]": "passed",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_interrupted_create_leaves_no_stale_ready[9]": "passed",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_interrupted_reset_leaves_one_or_zero_generations": "passed",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_port_collision_on_reset": "passed",
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A14_same_name_race": "passed"
+      }
+    },
+    "A15": {
+      "durations": {
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A15_destroy_is_idempotent_and_complete": 0.96
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a13_a15_leases_concurrency_cleanup.py::test_A15_destroy_is_idempotent_and_complete": "passed"
+      }
+    },
+    "A16": {
+      "durations": {
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A16_all_json_documents_followed_the_contract": 1.32
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A16_all_json_documents_followed_the_contract": "passed"
+      }
+    },
+    "A17": {
+      "durations": {
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A17_measurements_and_operation_coverage": 8.52
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A17_measurements_and_operation_coverage": "passed"
+      }
+    },
+    "A18": {
+      "durations": {
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A18_documentation_review": 0.01
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A18_documentation_review": "passed"
+      }
+    },
+    "A19": {
+      "durations": {
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A19_ci_configuration": 0.01
+      },
+      "status": "passed",
+      "tests": {
+        "tests/acceptance/test_a16_a19_contract_measure_docs.py::test_A19_ci_configuration": "passed"
+      }
+    }
+  },
+  "ci_run": "https://github.com/godspeed-you/ono-sendai-lab/actions/runs/45496461854",
+  "cleanup": {
+    "active_lab_units": "",
+    "emulator_processes": 0,
+    "records": 0,
+    "runtime_generation_dirs": 0,
+    "verified": true
+  },
+  "client": {
+    "botocore": "1.44.10"
+  },
+  "code_hash": "ba729370c6d7fe8c8baa25adf159bfd20927f214a717d44b96d11100bc8afe6d",
+  "code_hash_at_end": "ba729370c6d7fe8c8baa25adf159bfd20927f214a717d44b96d11100bc8afe6d",
+  "durations": {
+    "acceptance_seconds": 230
+  },
+  "emulator": {
+    "asset_sha256": "b18a229dfb6b27acbe227bb907457f270e5417443a4d27a5c86ed9926e562fbb",
+    "executable_sha256": "950eeab681c2cd4e9167a8dbe8ad9a74e0d6ad51aad86dfb5660245bbbd1f20f",
+    "version": "1.0.598"
+  },
+  "git_head": "c9f96f46d1f5aebede73e32110ddcb42c9aca26e",
+  "host": {
+    "kernel": "7.0.0-1017-azure",
+    "machine": "x86_64",
+    "os_release": {
+      "id": "ubuntu",
+      "pretty_name": "Ubuntu 24.04.5 LTS",
+      "version_id": "24.04"
+    },
+    "python": "3.12.3"
+  },
+  "isolation": {
+    "external_probe": {
+      "result": "ENETUNREACH",
+      "target": "192.0.2.1:9"
+    },
+    "interfaces": [
+      "lo"
+    ],
+    "ok": true,
+    "problems": []
+  },
+  "kind": "ci-acceptance",
+  "limits": {
+    "cpu.max": "100000 100000",
+    "memory.max": "1073741824",
+    "memory.swap.max": "0",
+    "memory.zswap.max": "0",
+    "pids.max": "512"
+  },
+  "measurements": {
+    "after_aws_minimal_seed_and_10_reads": {
+      "cpu_nr_throttled": 3,
+      "cpu_usage_usec": 516279,
+      "emulator_hwm_bytes": 385081344,
+      "emulator_rss_bytes": 385081344,
+      "memory_current_bytes": 263569408,
+      "memory_peak_bytes": 263577600,
+      "supervisor_rss_bytes": 72310784,
+      "swap_current_bytes": 0
+    },
+    "disk": {
+      "budget_bytes": 5000000000,
+      "hard_quota": false,
+      "headroom_bytes": 3171614592,
+      "host_free_bytes": 89737830400,
+      "locations": {
+        "cache": 218005504,
+        "data": 1358553088,
+        "runtime": 0,
+        "state": 12288
+      },
+      "reserve_bytes": 250000000,
+      "tracked_bytes": 1814528,
+      "tracked_count": 1,
+      "used_bytes": 1578385408
+    },
+    "durations_seconds": {
+      "create": 0.64,
+      "destroy": 0.1,
+      "reset_with_scenario": 0.95,
+      "seed_plus_10_reads": 0.74
+    },
+    "host_cli_peak_rss_kib": {
+      "scenarios": 43228,
+      "status": 43228
+    },
+    "idle_after_5s": {
+      "cpu_nr_throttled": 3,
+      "cpu_usage_usec": 442475,
+      "emulator_hwm_bytes": 379322368,
+      "emulator_rss_bytes": 379322368,
+      "memory_current_bytes": 260960256,
+      "memory_peak_bytes": 261349376,
+      "supervisor_rss_bytes": 70193152,
+      "swap_current_bytes": 0
+    },
+    "load_average": [
+      0.41796875,
+      0.33203125,
+      0.1533203125
+    ]
+  },
+  "not_ci_evidence": false,
+  "schema_version": 1,
+  "spec_sha256": "ea257cb2da7da02a7ed6d9c3ac9f192ee3e14ad18a6b31cd512bb18c09862d0d",
+  "worktree_dirty_at_run": false
+}
