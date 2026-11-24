@@ -80,11 +80,18 @@ def test_A17_measurements_and_operation_coverage(lab):
     lab.ok("destroy", "a17")
     destroy_s = round(time.monotonic() - t3, 2)
     disk = lab.ok("doctor")["checks"]["disk"]
+    from labharness import CLI, run_measured
+
+    cli_rss = {}
+    for label, args in (("status", ["--json", "status"]), ("scenarios", ["--json", "scenarios"])):
+        rc, _, _, rss = run_measured([str(CLI), *args], lab.env)
+        assert rc == 0
+        cli_rss[label] = rss
     measurements = {
         "idle_after_5s": idle,
         "after_aws_minimal_seed_and_10_reads": normal,
         "durations_seconds": {"create": create_s, "seed_plus_10_reads": normal_s, "reset_with_scenario": reset_s, "destroy": destroy_s},
-        "host_cli_max_rss_kb": lab.cli_maxrss_kb,
+        "host_cli_peak_rss_kib": cli_rss,
         "disk": disk,
         "load_average": os.getloadavg(),
     }

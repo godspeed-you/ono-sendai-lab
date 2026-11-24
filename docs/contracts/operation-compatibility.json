@@ -1,0 +1,263 @@
+{
+  "schema_version": 1,
+  "emulator_version": "1.0.598",
+  "client": {
+    "name": "botocore",
+    "version": "1.44.10"
+  },
+  "region": "us-west-2",
+  "generated_from": "scripts/acceptance.sh (tests/acceptance, real emulator)",
+  "operations": [
+    {
+      "service": "ec2",
+      "operation": "create-security-group",
+      "surface": "fixture-internal",
+      "scenarios": [
+        "aws-minimal"
+      ],
+      "observed_outcome": "succeeded against the pinned emulator in a contained generation",
+      "evidence": "docs/evidence/acceptance-evidence.json",
+      "test_reference": [
+        "tests/acceptance::test_A06_aws_minimal_topology_independently_verified"
+      ],
+      "known_limitation": null,
+      "qualification_status": "verified",
+      "upstream_fidelity_reference": "https://github.com/aws/aws-emulator/releases/tag/v1.0.598 (scores.json.gz; service-wide, not used for qualification)"
+    },
+    {
+      "service": "ec2",
+      "operation": "create-subnet",
+      "surface": "fixture-internal",
+      "scenarios": [
+        "aws-minimal"
+      ],
+      "observed_outcome": "succeeded against the pinned emulator in a contained generation",
+      "evidence": "docs/evidence/acceptance-evidence.json",
+      "test_reference": [
+        "tests/acceptance::test_A06_aws_minimal_topology_independently_verified"
+      ],
+      "known_limitation": null,
+      "qualification_status": "verified",
+      "upstream_fidelity_reference": "https://github.com/aws/aws-emulator/releases/tag/v1.0.598 (scores.json.gz; service-wide, not used for qualification)"
+    },
+    {
+      "service": "ec2",
+      "operation": "create-vpc",
+      "surface": "fixture-internal",
+      "scenarios": [
+        "aws-minimal"
+      ],
+      "observed_outcome": "succeeded against the pinned emulator in a contained generation",
+      "evidence": "docs/evidence/acceptance-evidence.json",
+      "test_reference": [
+        "tests/acceptance::test_A06_aws_minimal_topology_independently_verified"
+      ],
+      "known_limitation": null,
+      "qualification_status": "verified",
+      "upstream_fidelity_reference": "https://github.com/aws/aws-emulator/releases/tag/v1.0.598 (scores.json.gz; service-wide, not used for qualification)"
+    },
+    {
+      "service": "ec2",
+      "operation": "describe-availability-zones",
+      "surface": "fixture-internal",
+      "scenarios": [],
+      "observed_outcome": "succeeded against the pinned emulator in a contained generation",
+      "evidence": "docs/evidence/acceptance-evidence.json",
+      "test_reference": [
+        "tests/acceptance::test_A03_prebuilt_emulator_starts_verified"
+      ],
+      "known_limitation": null,
+      "qualification_status": "verified",
+      "upstream_fidelity_reference": "https://github.com/aws/aws-emulator/releases/tag/v1.0.598 (scores.json.gz; service-wide, not used for qualification)"
+    },
+    {
+      "service": "ec2",
+      "operation": "describe-security-groups",
+      "surface": "public",
+      "scenarios": [
+        "aws-empty",
+        "aws-minimal"
+      ],
+      "observed_outcome": "succeeded against the pinned emulator in a contained generation",
+      "evidence": "docs/evidence/acceptance-evidence.json",
+      "test_reference": [
+        "tests/acceptance::test_A05_aws_empty_observes_baseline_without_creating",
+        "tests/acceptance::test_A06_aws_minimal_topology_independently_verified"
+      ],
+      "known_limitation": "A default security group exists in a fresh generation (baseline).",
+      "qualification_status": "verified",
+      "upstream_fidelity_reference": "https://github.com/aws/aws-emulator/releases/tag/v1.0.598 (scores.json.gz; service-wide, not used for qualification)"
+    },
+    {
+      "service": "ec2",
+      "operation": "describe-subnets",
+      "surface": "public",
+      "scenarios": [
+        "aws-empty",
+        "aws-minimal"
+      ],
+      "observed_outcome": "succeeded against the pinned emulator in a contained generation",
+      "evidence": "docs/evidence/acceptance-evidence.json",
+      "test_reference": [
+        "tests/acceptance::test_A05_aws_empty_observes_baseline_without_creating",
+        "tests/acceptance::test_A06_aws_minimal_topology_independently_verified",
+        "tests/acceptance::test_A07_direct_operations_observe_fixture_and_mutate"
+      ],
+      "known_limitation": "Four default subnets exist in a fresh generation (baseline).",
+      "qualification_status": "verified",
+      "upstream_fidelity_reference": "https://github.com/aws/aws-emulator/releases/tag/v1.0.598 (scores.json.gz; service-wide, not used for qualification)"
+    },
+    {
+      "service": "ec2",
+      "operation": "describe-vpcs",
+      "surface": "public",
+      "scenarios": [
+        "aws-empty",
+        "aws-minimal"
+      ],
+      "observed_outcome": "succeeded against the pinned emulator in a contained generation",
+      "evidence": "docs/evidence/acceptance-evidence.json",
+      "test_reference": [
+        "tests/acceptance::test_A05_aws_empty_observes_baseline_without_creating",
+        "tests/acceptance::test_A06_aws_minimal_topology_independently_verified",
+        "tests/acceptance::test_A07_direct_operations_observe_fixture_and_mutate"
+      ],
+      "known_limitation": "A default VPC 172.31.0.0/16 exists in a fresh generation; it is recorded as baseline, never as fixture-owned.",
+      "qualification_status": "verified",
+      "upstream_fidelity_reference": "https://github.com/aws/aws-emulator/releases/tag/v1.0.598 (scores.json.gz; service-wide, not used for qualification)"
+    },
+    {
+      "service": "s3",
+      "operation": "create-bucket",
+      "surface": "public",
+      "scenarios": [
+        "aws-minimal"
+      ],
+      "observed_outcome": "succeeded against the pinned emulator in a contained generation",
+      "evidence": "docs/evidence/acceptance-evidence.json",
+      "test_reference": [
+        "tests/acceptance::test_A06_aws_minimal_topology_independently_verified",
+        "tests/acceptance::test_A07_direct_operations_observe_fixture_and_mutate"
+      ],
+      "known_limitation": "Outside us-east-1 the emulator requires CreateBucketConfiguration.LocationConstraint; the lab sets it explicitly to the session region (IllegalLocationConstraintException without it).",
+      "qualification_status": "verified",
+      "upstream_fidelity_reference": "https://github.com/aws/aws-emulator/releases/tag/v1.0.598 (scores.json.gz; service-wide, not used for qualification)"
+    },
+    {
+      "service": "s3",
+      "operation": "delete-bucket",
+      "surface": "public",
+      "scenarios": [],
+      "observed_outcome": "succeeded against the pinned emulator in a contained generation",
+      "evidence": "docs/evidence/acceptance-evidence.json",
+      "test_reference": [
+        "tests/acceptance::test_A07_direct_operations_observe_fixture_and_mutate"
+      ],
+      "known_limitation": null,
+      "qualification_status": "verified",
+      "upstream_fidelity_reference": "https://github.com/aws/aws-emulator/releases/tag/v1.0.598 (scores.json.gz; service-wide, not used for qualification)"
+    },
+    {
+      "service": "s3",
+      "operation": "get-bucket-location",
+      "surface": "fixture-internal",
+      "scenarios": [
+        "aws-minimal"
+      ],
+      "observed_outcome": "succeeded against the pinned emulator in a contained generation",
+      "evidence": "docs/evidence/acceptance-evidence.json",
+      "test_reference": [
+        "tests/acceptance::test_A06_aws_minimal_topology_independently_verified"
+      ],
+      "known_limitation": null,
+      "qualification_status": "verified",
+      "upstream_fidelity_reference": "https://github.com/aws/aws-emulator/releases/tag/v1.0.598 (scores.json.gz; service-wide, not used for qualification)"
+    },
+    {
+      "service": "s3",
+      "operation": "get-bucket-tagging",
+      "surface": "fixture-internal",
+      "scenarios": [
+        "aws-minimal"
+      ],
+      "observed_outcome": "succeeded against the pinned emulator in a contained generation",
+      "evidence": "docs/evidence/acceptance-evidence.json",
+      "test_reference": [
+        "tests/acceptance::test_A06_aws_minimal_topology_independently_verified"
+      ],
+      "known_limitation": null,
+      "qualification_status": "verified",
+      "upstream_fidelity_reference": "https://github.com/aws/aws-emulator/releases/tag/v1.0.598 (scores.json.gz; service-wide, not used for qualification)"
+    },
+    {
+      "service": "s3",
+      "operation": "head-bucket",
+      "surface": "fixture-internal",
+      "scenarios": [
+        "aws-minimal"
+      ],
+      "observed_outcome": "succeeded against the pinned emulator in a contained generation",
+      "evidence": "docs/evidence/acceptance-evidence.json",
+      "test_reference": [
+        "tests/acceptance::test_A06_aws_minimal_topology_independently_verified"
+      ],
+      "known_limitation": null,
+      "qualification_status": "verified",
+      "upstream_fidelity_reference": "https://github.com/aws/aws-emulator/releases/tag/v1.0.598 (scores.json.gz; service-wide, not used for qualification)"
+    },
+    {
+      "service": "s3",
+      "operation": "list-buckets",
+      "surface": "public",
+      "scenarios": [
+        "aws-empty",
+        "aws-minimal"
+      ],
+      "observed_outcome": "succeeded against the pinned emulator in a contained generation",
+      "evidence": "docs/evidence/acceptance-evidence.json",
+      "test_reference": [
+        "tests/acceptance::test_A05_aws_empty_observes_baseline_without_creating",
+        "tests/acceptance::test_A06_aws_minimal_topology_independently_verified",
+        "tests/acceptance::test_A07_direct_operations_observe_fixture_and_mutate"
+      ],
+      "known_limitation": null,
+      "qualification_status": "verified",
+      "upstream_fidelity_reference": "https://github.com/aws/aws-emulator/releases/tag/v1.0.598 (scores.json.gz; service-wide, not used for qualification)"
+    },
+    {
+      "service": "s3",
+      "operation": "put-bucket-tagging",
+      "surface": "fixture-internal",
+      "scenarios": [
+        "aws-minimal"
+      ],
+      "observed_outcome": "succeeded against the pinned emulator in a contained generation",
+      "evidence": "docs/evidence/acceptance-evidence.json",
+      "test_reference": [
+        "tests/acceptance::test_A06_aws_minimal_topology_independently_verified"
+      ],
+      "known_limitation": null,
+      "qualification_status": "verified",
+      "upstream_fidelity_reference": "https://github.com/aws/aws-emulator/releases/tag/v1.0.598 (scores.json.gz; service-wide, not used for qualification)"
+    },
+    {
+      "service": "sts",
+      "operation": "get-caller-identity",
+      "surface": "public",
+      "scenarios": [
+        "aws-empty",
+        "aws-minimal"
+      ],
+      "observed_outcome": "succeeded against the pinned emulator in a contained generation",
+      "evidence": "docs/evidence/acceptance-evidence.json",
+      "test_reference": [
+        "tests/acceptance::test_A03_prebuilt_emulator_starts_verified",
+        "tests/acceptance::test_A05_aws_empty_observes_baseline_without_creating",
+        "tests/acceptance::test_A06_aws_minimal_topology_independently_verified"
+      ],
+      "known_limitation": "Wrong keys yield InvalidClientTokenId (HTTP 403) on 1.0.598; the user guide documents AccessDenied for that case.",
+      "qualification_status": "verified",
+      "upstream_fidelity_reference": "https://github.com/aws/aws-emulator/releases/tag/v1.0.598 (scores.json.gz; service-wide, not used for qualification)"
+    }
+  ]
+}

@@ -139,3 +139,27 @@ def test_offline_cli_documents_validate(tmp_path, args):
     doc = json.loads(out.stdout)
     errs = list(envelope_validator().iter_errors(doc))
     assert not errs, [e.message for e in errs]
+
+
+@pytest.mark.parametrize("python_version", ["3.12", "3.13", "3.14"])
+def test_locks_are_closed_for_every_supported_python(python_version):
+    """Regression: referencing needs typing-extensions below 3.13; the lock was
+    resolved on 3.14 and the CI gate on 3.12 failed at import time."""
+    from importlib import metadata
+
+    from packaging.requirements import Requirement
+    from packaging.utils import canonicalize_name
+
+    for lock_name in ("requirements-runtime.txt", "requirements-dev.txt"):
+        text = (ROOT / "locks" / lock_name).read_text()
+        locked = {canonicalize_name(line.split("==")[0]) for line in text.splitlines() if "==" in line and not line.startswith("#")}
+        env = {"python_version": python_version, "python_full_version": python_version + ".0", "extra": ""}
+        for name in sorted(locked):
+            try:
+                requires = metadata.requires(name) or []
+            except metadata.PackageNotFoundError:
+                continue
+            for spec in requires:
+                req = Requirement(spec)
+                if req.marker is None or req.marker.evaluate(env):
+                    assert canonicalize_name(req.name) in locked, f"{lock_name}: {name} needs {req.name} on Python {python_version}"

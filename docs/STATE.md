@@ -34,7 +34,11 @@ Effective isolation: bubblewrap user/net/pid/ipc/uts/cgroup/mount namespaces, `l
 
 ## CI status
 
-Local evidence is never reported as CI evidence. Status: pending first push of the `implementation` branch.
+Local evidence is never reported as CI evidence.
+
+| Run | Commit | gate (ubuntu-24.04, Python 3.12) | acceptance |
+| --- | --- | --- | --- |
+| [45437926431](https://github.com/godspeed-you/ono-sendai-lab/actions/runs/45437926431) | `63d5843` | failed: `referencing` needs `typing-extensions` on Python 3.12; the dev lock had been resolved on 3.14 (fixed with a lock-closure regression test) | skipped (needs gate) |
 
 ## Issues (milestone v0.1.0)
 

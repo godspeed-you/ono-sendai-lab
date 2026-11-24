@@ -83,12 +83,32 @@ class Result:
         return self.doc["error"]
 
 
+def run_measured(argv: list[str], env: dict, timeout: float = 300) -> tuple[int, str, str, int]:
+    """Run one CLI call and return (rc, stdout, stderr, peak RSS of that process in KiB)."""
+    import tempfile
+
+    with tempfile.TemporaryFile(dir=RUN_DIR) as out, tempfile.TemporaryFile(dir=RUN_DIR) as err:
+        child = subprocess.Popen(argv, stdout=out, stderr=err, env=env)
+        deadline = time.monotonic() + timeout
+        while True:
+            pid, status, usage = os.wait4(child.pid, os.WNOHANG)
+            if pid:
+                break
+            if time.monotonic() > deadline:
+                child.kill()
+                raise TimeoutError(argv)
+            time.sleep(0.02)
+        child.returncode = os.waitstatus_to_exitcode(status)
+        out.seek(0)
+        err.seek(0)
+        return child.returncode, out.read().decode(), err.read().decode(), usage.ru_maxrss
+
+
 class LabRunner:
     def __init__(self, test_name: str):
         self.test = test_name
         self.env = base_env()
         self.created: set[str] = set()
-        self.cli_maxrss_kb = 0
 
     def popen(self, *args: str, config: dict | None = None, env: dict | None = None):
         return subprocess.Popen(
@@ -109,9 +129,6 @@ class LabRunner:
         if args and args[0] == "create" and "--name" in args:
             self.created.add(args[args.index("--name") + 1])
         proc = subprocess.run(argv, capture_output=True, text=True, env=self._env(config, env), timeout=timeout)
-        import resource
-
-        self.cli_maxrss_kb = max(self.cli_maxrss_kb, resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss)
         doc = None
         if as_json:
             assert proc.stdout.count("\n") == 1, f"expected exactly one JSON document, got {proc.stdout!r} / {proc.stderr!r}"
